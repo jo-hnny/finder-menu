@@ -37,14 +37,22 @@ final class MenuStore {
         mutate { $0.move(fromOffsets: source, toOffset: destination) }
     }
 
+    func move(id: UUID, to targetID: UUID) {
+        guard id != targetID,
+              let source = items.firstIndex(where: { $0.id == id }),
+              let target = items.firstIndex(where: { $0.id == targetID }) else { return }
+        move(fromOffsets: [source], toOffset: source < target ? target + 1 : target)
+    }
+
     func canMoveSelected(by offset: Int) -> Bool {
-        guard let index = selectedIndex else { return false }
+        guard let index = items.firstIndex(where: { $0.id == selectedID }) else { return false }
         return items.indices.contains(index + offset)
     }
 
     func moveSelected(by offset: Int) {
-        guard canMoveSelected(by: offset), let index = selectedIndex else { return }
-        move(fromOffsets: [index], toOffset: offset > 0 ? index + offset + 1 : index + offset)
+        guard canMoveSelected(by: offset),
+              let index = items.firstIndex(where: { $0.id == selectedID }) else { return }
+        move(id: items[index].id, to: items[index + offset].id)
     }
 
     func remove(id: UUID) {
@@ -58,8 +66,6 @@ final class MenuStore {
         let skipped = urls.count - candidates.count
         if skipped > 0 { message = String(localized: "已跳过 \(skipped) 个无效的应用。") }
     }
-
-    private var selectedIndex: Int? { items.firstIndex { $0.id == selectedID } }
 
     /// Saves first and only then publishes, so a failed save keeps the last saved list on screen.
     private func mutate(_ change: (inout MenuConfiguration) -> Void) {

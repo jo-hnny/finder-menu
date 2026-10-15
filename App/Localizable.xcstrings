@@ -31,22 +31,22 @@
         }
       }
     },
-    "Finder 扩展尚未启用": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Finder extension is off"
-          }
-        }
-      }
-    },
     "Finder 扩展已启用": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Finder extension is on"
+          }
+        }
+      }
+    },
+    "Finder 扩展运行中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder extension is running"
           }
         }
       }
@@ -87,6 +87,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Move Down"
+          }
+        }
+      }
+    },
+    "仅在选中文件夹时显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show only when folders are selected."
+          }
+        }
+      }
+    },
+    "仅在选中文件时显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show only when files are selected."
+          }
+        }
+      }
+    },
+    "仅文件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files"
+          }
+        }
+      }
+    },
+    "仅文件夹": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folders"
+          }
+        }
+      }
+    },
+    "全部": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        }
+      }
+    },
+    "关闭编辑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close Editor"
+          }
+        }
+      }
+    },
+    "内置操作": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in action"
           }
         }
       }
@@ -151,6 +221,16 @@
         }
       }
     },
+    "在文件和文件夹的右键菜单中显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in the context menu for files and folders."
+          }
+        }
+      }
+    },
     "在菜单中显示": {
       "localizations": {
         "en": {
@@ -161,12 +241,22 @@
         }
       }
     },
-    "已保存 · 退出应用后仍然生效": {
+    "已在系统设置中启用 Finder 扩展。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saved · Keeps working after you quit"
+            "value": "The Finder extension is enabled in System Settings."
+          }
+        }
+      }
+    },
+    "已检测到正在运行的 Finder 扩展，可能来自另一个已安装的应用副本。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A running Finder extension was detected. It may belong to another installed copy of the app."
           }
         }
       }
@@ -191,6 +281,16 @@
         }
       }
     },
+    "应用操作": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Application action"
+          }
+        }
+      }
+    },
     "快速操作": {
       "localizations": {
         "en": {
@@ -207,6 +307,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open"
+          }
+        }
+      }
+    },
+    "扩展状态待确认": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extension status unconfirmed"
+          }
+        }
+      }
+    },
+    "扩展设置…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extension Settings…"
           }
         }
       }
@@ -231,12 +351,42 @@
         }
       }
     },
+    "拖动 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag %@"
+          }
+        }
+      }
+    },
+    "拖动左侧手柄排序 · 选中项目编辑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the handle to reorder · Select an item to edit"
+          }
+        }
+      }
+    },
     "拖动排序 · 选中项目编辑名称和显示范围": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Drag to reorder · Select an item to edit its name and scope"
+          }
+        }
+      }
+    },
+    "拖动调整顺序": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to reorder"
           }
         }
       }
@@ -281,6 +431,16 @@
         }
       }
     },
+    "暂时无法确认扩展状态，可在系统设置中检查。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The extension status cannot currently be confirmed. Check it in System Settings."
+          }
+        }
+      }
+    },
     "此处没有已启用的菜单项": {
       "localizations": {
         "en": {
@@ -321,12 +481,32 @@
         }
       }
     },
-    "管理…": {
+    "编辑 %@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manage…"
+            "value": "Edit %@"
+          }
+        }
+      }
+    },
+    "编辑菜单项": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Menu Item"
+          }
+        }
+      }
+    },
+    "自动保存": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autosave"
           }
         }
       }
@@ -337,6 +517,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Menu Title"
+          }
+        }
+      }
+    },
+    "菜单名称在回车或离开编辑时保存，其他更改即时保存。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu titles save on Return or when leaving the editor. Other changes save immediately."
           }
         }
       }
@@ -367,6 +557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit"
+          }
+        }
+      }
+    },
+    "退出配置应用后，Finder 菜单仍然可用。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Finder menu remains available after quitting this app."
           }
         }
       }

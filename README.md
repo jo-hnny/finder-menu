@@ -1,14 +1,14 @@
 # Finder Menu
 
-轻量 macOS Finder 右键菜单工具。SwiftUI 配置窗口左侧配置、右侧实时预览，选中项目后在 inspector 中编辑：添加 App、拖动排序、启用或禁用，修改自动保存，退出配置应用后仍然生效。界面跟随系统浅色 / 深色外观，文案支持简体中文与英文。
+轻量 macOS Finder 右键菜单工具。SwiftUI 配置窗口按「主菜单 → 编辑 → 预览」排列，选中项目后展开中间编辑面板：添加 App、拖动排序、启用或禁用，修改自动保存，退出配置应用后仍然生效。界面沿用应用图标的蓝紫色与柔和圆角，跟随系统浅色 / 深色外观，文案支持简体中文与英文。
 
 ## 使用
 
 - 点击「添加应用」选择一个或多个 `.app`，使用真实应用图标；相同 bundle ID 不重复添加。
-- 拖动列表行调整顺序；也可以选中项目后在 inspector 中点「上移」/「下移」或按 ⌥⌘↑ / ⌥⌘↓，键盘和 VoiceOver 均可操作。inspector 中可编辑名称、选择显示范围或移除 App。名称在回车、离开输入框、切换项目或退出时保存，不会在输入过程中逐字保存。
-- 右侧预览可切换文件 / 文件夹，按当前顺序显示已启用且符合范围的项目，编辑时高亮对应菜单；切换预览不修改配置。
+- 拖动列表左侧的六点手柄调整顺序；也可使用菜单栏「顺序」中的「上移」/「下移」或快捷键 ⌥⌘↑ / ⌥⌘↓，VoiceOver 可使用项目的同名操作。编辑面板中可编辑名称、通过分段控件选择显示范围或移除 App，底部红色按钮用于移除应用。名称在回车、离开输入框、切换项目或退出时保存，不会在输入过程中逐字保存。点击列表下方或预览下方的空白可收起编辑面板。
+- 右侧预览可切换文件 / 文件夹，按当前顺序显示已启用且符合范围的项目，编辑时高亮对应菜单。选中仅文件 / 仅文件夹的项目，或修改其显示范围时，预览自动切换到对应对象；范围为全部时保留当前对象。切换预览不修改配置。
 - 左侧列表中的开关控制菜单是否显示。内置「复制路径」可以禁用，但不能删除。
-- 修改保存成功后显示「已保存」。保存失败会显示错误并保留上一次成功的列表。
+- 底栏右侧显示「自动保存」，保存失败时替换为错误提示并保留上一次成功的列表。左侧区分扩展「已启用」「运行中」和「状态待确认」；存在多个应用副本时，不会将当前副本的查询失败直接当作全局未启用。
 - 点击「退出应用」或 Command-Q 后，Finder 扩展继续读取已保存配置。打开 App 的助手仅在操作时启动，完成后退出，不注册登录项，也不重启配置应用。
 - 升级后需要先启动一次配置应用，以生成请求签名密钥；在此之前「用 … 打开」菜单项显示为不可用，「复制路径」不受影响。
 
@@ -24,13 +24,18 @@
 
 也可以使用 Codex 的 Run 按钮，或在 Xcode 中打开 `FinderMenu.xcodeproj`，运行 `FinderMenu` scheme。
 
-产物位于 `.build/DerivedData/Build/Products/Debug/Finder Menu.app`。脚本注册此处的扩展，不复制到 Applications，不修改其他 Finder 扩展。首次运行点击底部「管理…」，在系统设置中开启 Finder Menu；若已启用，后续运行脚本会重新加载本扩展。
+产物位于 `.build/DerivedData/Build/Products/Debug/Finder Menu.app`，不复制到 Applications。Xcode 构建会自动注册应用；若检测到已有的其他扩展副本（包括 Applications 中的安装版），脚本会在结束时注销开发扩展的登记、恢复原扩展，并仅在原本已启用时重新加载。构建失败或收到 INT/TERM 信号时也会执行恢复。构建期间菜单可能短暂重载，已关闭的扩展不会被自动开启。
+
+有其他副本时，默认只构建，不启动同名开发应用。此保护适用于脚本；直接在 Xcode 中运行仍可能注册开发副本。
+
+没有其他副本时，脚本会注册并启动开发版本。首次运行点击底部「扩展设置…」，在系统设置中开启 Finder Menu；若已启用，脚本会重新加载本扩展。确需测试开发副本时，可显式添加 `--allow-extension-reload`，允许注册、启动及重新加载；这可能影响已安装版本的右键菜单。
 
 ```sh
-./script/build_and_run.sh --build-only # 构建及校验签名
-./script/build_and_run.sh --verify     # 构建、启动并检查主应用进程
-./script/build_and_run.sh --telemetry  # 构建、启动并观察操作日志
-./script/build_and_run.sh --debug      # 用 LLDB 启动主应用
+./script/build_and_run.sh --build-only # 构建及校验签名，结束后恢复已有扩展
+./script/build_and_run.sh --verify     # 无其他副本时，启动并检查主应用进程
+./script/build_and_run.sh --telemetry  # 无其他副本时，启动并观察操作日志
+./script/build_and_run.sh --debug      # 无其他副本时，用 LLDB 启动主应用
+./script/build_and_run.sh run --allow-extension-reload # 显式允许开发副本影响现有扩展
 ./script/test.sh                      # FinderMenuCore 单元测试（swift test）
 ```
 
@@ -44,7 +49,7 @@
 
 构建 Release Apple Silicon 二进制（仅 arm64，macOS 14+），校验主应用、扩展和助手签名，并确认三个组件的版本号与构建号一致，生成 `dist/Finder-Menu-<版本>-arm64.dmg` 及 SHA-256 校验文件。版本默认取自 `Config/Base.xcconfig`，可用 `MARKETING_VERSION`、`CURRENT_PROJECT_VERSION` 环境变量覆盖。脚本还会校验磁盘映像、以只读方式挂载，并再次检查其中的应用签名。
 
-打开 DMG，将 Finder Menu 拖入 Applications，再从 Applications 启动，点击「管理…」启用 Finder 扩展。安装包仍使用本地 ad-hoc 签名，未进行 Apple 公证；跨机器安装时可能出现 macOS 安全提示。
+打开 DMG，将 Finder Menu 拖入 Applications，再从 Applications 启动，点击「扩展设置…」启用 Finder 扩展。安装包仍使用本地 ad-hoc 签名，未进行 Apple 公证；跨机器安装时可能出现 macOS 安全提示。
 
 ## 自动发布
 
@@ -67,7 +72,7 @@ CI 包仍为未公证的 ad-hoc 签名版本。自动发布不等同于完成 Ap
 
 ```text
 Core/       FinderMenuCore 本地 Swift 包：模型与迁移、选择分类、编辑操作、签名请求、偏好存储
-App/        SwiftUI 配置窗口（List + inspector）、应用选择与图标缓存
+App/        SwiftUI 配置窗口（拖动列表 + 编辑面板 + 预览）、应用选择与图标缓存
 Extension/  Finder Sync 扩展
 Opener/     嵌入主应用的短生命周期打开助手
 Config/     所有 target 共享的构建设置与版本号
@@ -76,7 +81,7 @@ Config/     所有 target 共享的构建设置与版本号
 - 工程使用 Xcode 文件夹同步，新增源文件无需修改 `project.pbxproj`；三个 target 都依赖 `FinderMenuCore`，以 Swift 6 语言模式编译。
 - 配置模型中，菜单动作是带关联值的枚举（`copyPaths` / `open(application:)`），不会出现「打开应用却没有 bundle ID」这类非法组合。配置以版本号 2 的 JSON 保存；读取 0.1.x 的版本 1 配置时自动迁移，首次修改后写回新格式。遇到更新版本的配置时拒绝读写，不会覆盖。
 - 选择分类每次菜单只检查一次所选项目，结果为文件、文件夹或混合。`.app`、`.rtfd` 等 package 按 Finder 的习惯视为文件，符号链接按目标判断。
-- `Extension/`：Finder Sync 每次生成菜单时重新读取配置。复制路径直接使用 AppKit 剪贴板，多选时每行一条。Finder 在 XPC 队列而非主线程调用菜单和动作，扩展会先切换到主线程再操作 AppKit。
+- `Extension/`：Finder Sync 每次生成菜单时重新读取配置。复制路径直接使用 AppKit 剪贴板，多选时每行一条。Finder 在 XPC 队列而非主线程调用菜单和动作，扩展会先切换到主线程再操作 AppKit。应用图标先绘制成 32×32 像素的 sRGB 位图，以 16 点显示，避免把原始多尺寸图标的大量数据传给 Finder；菜单日志记录生成耗时。
 - `Opener/`：扩展用签名 URL 事件把菜单 ID 和选中路径交给指定的助手。助手先验证签名和时效，再重新校验启用状态、显示范围及应用身份，然后调用 `NSWorkspace` 打开文件或文件夹。没有 shell 命令拼接，也不依赖 `code` 命令。
 
 配置通过 `CFPreferences` 保存在 `dev.jojo.FinderMenu.Configuration` 域。主应用与扩展启用 App Sandbox，分别仅获得该域的读写 / 只读共享偏好例外。本地 ad-hoc 构建未使用需要团队签名的 App Groups。
@@ -95,7 +100,7 @@ Config/     所有 target 共享的构建设置与版本号
 
 ## 验证
 
-自动检查（`./script/test.sh`）覆盖：版本 1 配置迁移、编解码保留顺序与状态、拒绝更新版本 / 损坏 / 重复 ID / 空名称、与 SwiftUI `onMove` 一致的移动语义、内置项不可删除、添加应用去重、文件 / 文件夹 / 混合 / package / 符号链接分类，以及签名请求的伪造、篡改、过期、未签名旧格式和非法路径拒绝。
+自动检查（`./script/test.sh`）覆盖：版本 1 配置迁移、编解码保留顺序与状态、拒绝更新版本 / 损坏 / 重复 ID / 空名称、与 SwiftUI `onMove` 一致的移动语义、内置项不可删除、添加应用去重、文件 / 文件夹 / 混合 / package / 符号链接分类，以及签名请求的伪造、篡改、过期、未签名旧格式和非法路径拒绝。菜单图标测试验证编码体积上限、Retina 尺寸、颜色和透明度。
 
 2026-10-15，在 macOS 27.0.1 / Apple Silicon、Xcode 27.0 上验证 0.2.0：
 

@@ -19,10 +19,17 @@ final class FinderSync: FIFinderSync {
 
     /// Finder calls both the menu and its actions on an XPC queue, not main; AppKit work hops to main.
     nonisolated override func menu(for menuKind: FIMenuKind) -> NSMenu? {
+        let started = ProcessInfo.processInfo.systemUptime
         // Neither self nor NSMenu is Sendable. Both are only touched on main while this thread waits.
         nonisolated(unsafe) let target = self
         nonisolated(unsafe) var menu: NSMenu?
-        Self.onMain { menu = target.buildMenu(for: menuKind) }
+        Self.onMain {
+            let builtMenu = target.buildMenu(for: menuKind)
+            let count = builtMenu?.items.count ?? 0
+            let elapsed = (ProcessInfo.processInfo.systemUptime - started) * 1000
+            target.logger.info("Menu loaded: count=\(count), elapsed_ms=\(elapsed)")
+            menu = builtMenu
+        }
         return menu
     }
 
@@ -59,9 +66,7 @@ final class FinderSync: FIFinderSync {
                 menuItem.image = NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil)
             case .open(let application):
                 if let url = ApplicationResolver.url(for: application) {
-                    let icon = NSWorkspace.shared.icon(forFile: url.path)
-                    icon.size = NSSize(width: 16, height: 16)
-                    menuItem.image = icon
+                    menuItem.image = ApplicationResolver.menuIcon(at: url)
                     if !canSign {
                         menuItem.isEnabled = false
                         menuItem.toolTip = String(localized: "请先打开一次 Finder Menu 以完成更新。")
@@ -73,7 +78,6 @@ final class FinderSync: FIFinderSync {
             }
             menu.addItem(menuItem)
         }
-        logger.info("Menu loaded: count=\(menu.items.count)")
         return menu.items.isEmpty ? nil : menu
     }
 
