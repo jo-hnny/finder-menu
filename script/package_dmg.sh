@@ -20,10 +20,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
+PUBLIC_KEY="${SPARKLE_PUBLIC_ED_KEY-$(sed -n 's/^SPARKLE_PUBLIC_ED_KEY = *//p' "$ROOT_DIR/Config/Base.xcconfig")}"
+
 xcodebuild -quiet -project "$ROOT_DIR/FinderMenu.xcodeproj" \
   -scheme FinderMenu -configuration Release -destination 'generic/platform=macOS' \
   -derivedDataPath "$BUILD_DIR" ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
-  MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" build
+  MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+  SPARKLE_PUBLIC_ED_KEY="$PUBLIC_KEY" build
 
 codesign --verify --deep --strict --all-architectures "$APP_BUNDLE"
 for BINARY in \
