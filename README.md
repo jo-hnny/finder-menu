@@ -16,7 +16,7 @@
 
 ## 构建与运行
 
-需要完整 Xcode、macOS 14 或更新版本。
+需要完整 Xcode、macOS 14 或更新版本。与 CI 保持一致的工具链为 **Xcode 27.0（27A266a）、macOS SDK 27.0（26A425）**；可先运行 `./script/verify_toolchain.sh` 核对。本机安装路径不影响校验，使用多套 Xcode 时可通过 `DEVELOPER_DIR` 选择。
 
 ```sh
 ./script/build_and_run.sh
@@ -63,6 +63,8 @@ git push origin v0.1.0
 工作流先检查更新签名配置、运行 Core 测试，再构建和校验 Apple Silicon DMG、生成含 Ed25519 更新包签名的 `appcast.xml`，最后创建同名 GitHub Release，附上 DMG、SHA-256 校验文件、appcast 和自动生成的更新说明。版本号从 tag 提取，构建号使用 Actions run number，二者以构建设置传给所有组件，无需修改 `Config/Base.xcconfig`。只接受正式版本号，暂不支持 `-beta` 等预发布后缀。
 
 每个 Pull Request 和推送到 `master` 的提交会由 CI 工作流运行 Core 测试并构建应用。
+
+CI 和 Release 构建均使用 GitHub 的 `xcode-27` runner，显式选择 `/Applications/Xcode_27.0.app/Contents/Developer`，并在测试、构建前校验上述 Xcode 与 SDK 的版本和 build 号。该 runner 当前为 Public Preview；若镜像移除或替换指定工具链，工作流会失败，避免默认 Xcode 漂移导致原生控件外观变化。编译 SDK 的更新不改变 macOS 14 的最低运行要求。
 
 在 Actions → Release → Run workflow 中也可以手动验证打包；手动运行仅保存构建产物，不创建 Release。发布使用仓库自带的 `GITHUB_TOKEN`，更新签名需要按下节配置公钥变量与私钥 Secret；只有发布步骤所在的 job 有 `contents: write` 权限。已发布的 tag 不应移动或重复使用，后续发布请递增版本号，并保持 Actions 构建号递增。
 
