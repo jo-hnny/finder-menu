@@ -16,14 +16,19 @@ concurrency:
 jobs:
   build:
     if: github.event_name == 'workflow_dispatch' || !github.event.deleted
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Verify Xcode and macOS SDK
+        run: ./script/verify_toolchain.sh
 
       - name: Resolve version
         id: version
