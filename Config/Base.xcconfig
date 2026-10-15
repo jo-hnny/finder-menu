@@ -2,6 +2,11 @@
 MARKETING_VERSION = 0.2.0
 CURRENT_PROJECT_VERSION = 2
 
+// The public key may be committed here or supplied as a build setting by CI.
+SPARKLE_PUBLIC_ED_KEY = tgwtXM7rNJwNh7yZAzofYlZm4c5OSsbyuaNy42gtaHc=
+// xcconfig treats two slashes as a comment; the empty expansion preserves HTTPS.
+SPARKLE_FEED_URL = https:/$()/github.com/jo-hnny/finder-menu/releases/latest/download/appcast.xml
+
 MACOSX_DEPLOYMENT_TARGET = 14.0
 SDKROOT = macosx
 SWIFT_VERSION = 6.0

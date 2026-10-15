@@ -60,13 +60,69 @@ git tag -a v0.1.0 -m "Release v0.1.0"
 git push origin v0.1.0
 ```
 
-工作流先运行 Core 测试，再构建和校验 Apple Silicon DMG，最后创建同名 GitHub Release，附上 DMG、SHA-256 校验文件和自动生成的更新说明。版本号从 tag 提取，构建号使用 Actions run number，二者以构建设置传给所有组件，无需修改 `Config/Base.xcconfig`。只接受正式版本号，暂不支持 `-beta` 等预发布后缀。
+工作流先检查更新签名配置、运行 Core 测试，再构建和校验 Apple Silicon DMG、生成含 Ed25519 更新包签名的 `appcast.xml`，最后创建同名 GitHub Release，附上 DMG、SHA-256 校验文件、appcast 和自动生成的更新说明。版本号从 tag 提取，构建号使用 Actions run number，二者以构建设置传给所有组件，无需修改 `Config/Base.xcconfig`。只接受正式版本号，暂不支持 `-beta` 等预发布后缀。
 
 每个 Pull Request 和推送到 `master` 的提交会由 CI 工作流运行 Core 测试并构建应用。
 
-在 Actions → Release → Run workflow 中也可以手动验证打包；手动运行仅保存构建产物，不创建 Release。无需配置额外 Secret，发布使用仓库自带的 `GITHUB_TOKEN`；只有发布步骤所在的 job 有 `contents: write` 权限。已发布的 tag 不应移动或重复使用，后续发布请递增版本号。
+在 Actions → Release → Run workflow 中也可以手动验证打包；手动运行仅保存构建产物，不创建 Release。发布使用仓库自带的 `GITHUB_TOKEN`，更新签名需要按下节配置公钥变量与私钥 Secret；只有发布步骤所在的 job 有 `contents: write` 权限。已发布的 tag 不应移动或重复使用，后续发布请递增版本号，并保持 Actions 构建号递增。
 
 CI 包仍为未公证的 ad-hoc 签名版本。自动发布不等同于完成 Apple Developer ID 签名与公证。
+
+## 自动更新（Sparkle 2）
+
+主应用通过 Swift Package Manager 固定使用 Sparkle 2.10.0，在应用菜单中提供「检查更新…」。Sparkle 使用自己的标准界面征询自动检查更新的许可，并负责检查、下载、验证和安装；不会强制静默安装。更新检查只在配置应用运行时进行，退出后不额外启动常驻更新进程。已安装的旧版没有 Sparkle，需要手动安装一次首个接入版本。
+
+更新源为 `https://github.com/jo-hnny/finder-menu/releases/latest/download/appcast.xml`，每次正式发布复用同一份 Apple Silicon DMG，feed 中的下载地址固定指向该版本的 tag。发布 tag 前需完成以下一次性配置：
+
+1. 先执行 `./script/build_and_run.sh --build-only`，取得随依赖下载的 Sparkle 工具。生成独立的 Finder Menu 更新密钥，私钥保存在本机登录钥匙串中：
+
+   ```sh
+   SPARKLE_BIN="$PWD/.build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin"
+   "$SPARKLE_BIN/generate_keys" --account finder-menu
+   ```
+
+2. 在 GitHub 仓库 Settings → Secrets and variables → Actions 中，创建 **Variable** `SPARKLE_PUBLIC_ED_KEY`，值为上一步输出的 Base64 公钥。也可以使用 CLI：
+
+   ```sh
+   gh variable set SPARKLE_PUBLIC_ED_KEY \
+     --body "$("$SPARKLE_BIN/generate_keys" --account finder-menu -p)"
+   ```
+
+3. 导出私钥到仓库外的临时文件，上传为 **Secret** `SPARKLE_PRIVATE_ED_KEY` 后删除临时文件。不要把私钥写入代码、日志、Issue 或聊天：
+
+   ```sh
+   KEY_DIR="$(mktemp -d)"
+   chmod 700 "$KEY_DIR"
+   "$SPARKLE_BIN/generate_keys" --account finder-menu -x "$KEY_DIR/sparkle.key"
+   gh secret set SPARKLE_PRIVATE_ED_KEY < "$KEY_DIR/sparkle.key"
+   rm -f "$KEY_DIR/sparkle.key"
+   rmdir "$KEY_DIR"
+   ```
+
+   保留并安全备份钥匙串中的原始密钥，后续发布继续使用同一对密钥。
+
+4. 先手动运行 Release 工作流，检查产物中的 `appcast.xml`，确认版本、构建号、下载 URL 和 `sparkle:edSignature`。两项配置均缺失时，手动构建允许生成禁用更新功能的 DMG；正式 tag 发布始终要求两项齐全。公私钥不匹配或缺少更新包签名会阻断发布。
+
+公钥已保存在 `Config/Base.xcconfig` 的 `SPARKLE_PUBLIC_ED_KEY`，并同步到 GitHub Actions 同名 Variable；CI 可通过该变量覆盖构建公钥。私钥保存在登录钥匙串的 `finder-menu` 账户，以及 GitHub Secret `SPARKLE_PRIVATE_ED_KEY` 中，发布时仅通过标准输入交给官方 `generate_appcast` 工具。缺失或格式无效的公钥会使「检查更新…」禁用。`SPARKLE_FEED_URL` 也在此文件中配置，HTTPS 中间的 `$()` 用于避免 xcconfig 将 `//` 识别为注释。
+
+主应用保持 App Sandbox，更新下载和安装使用 Sparkle 的 Downloader / Installer XPC 服务，并添加官方要求的两个 Mach lookup 例外。Finder 扩展与打开助手不链接 Sparkle。更新时替换整个主应用 bundle，包含扩展与助手；不会修改菜单配置。当前仍为 ad-hoc 签名且未公证，需另外验证跨机器安装的 Gatekeeper 行为。
+
+2026-10-15，已在本机独立安装目录中完成 **0.2.0 (200) → 0.2.1 (201)** 验收，使用正式更新密钥和仅监听回环地址的 HTTP 测试源：
+
+| 检查 | 结果 |
+| --- | --- |
+| 第二次启动显示许可提示，选择自动检查并自动下载 | 通过，未手动触发检查即请求 appcast 和 DMG |
+| Sparkle 安装器验证更新包 | 通过，日志为 `OK: EdDSA signature is correct for update` |
+| 下载后选择「安装并重启应用」 | 通过，由 Sparkle 启动新进程，三个组件均为 0.2.1 (201) |
+| 新版再次检查更新 | 通过，显示「您使用的就是最新版！」 |
+| 更新后的嵌套签名校验 | 通过，`codesign --verify --deep --strict` |
+| 新版 Finder 扩展 →「用 预览 打开」中文、空格路径中的 PNG | 通过，扩展与助手日志均来自更新后的安装目录，预览成功打开文件 |
+| 配置和请求签名密钥 | 验收前后指纹一致；退出配置应用后扩展仍可使用，助手完成后退出 |
+| 验收清理 | 恢复 `/Applications` 中原安装版的扩展注册，关闭本机测试源 |
+
+上述为本机真实安装验收，未发布测试版本到 GitHub，尚未覆盖公开 Release 的 HTTPS 下载、Developer ID 签名、公证或其他机器。测试仅通过临时构建设置覆盖 feed，仓库默认更新源仍为 GitHub HTTPS URL。
+
+接入参考：[Sparkle 基础配置](https://sparkle-project.org/documentation/)、[沙盒配置](https://sparkle-project.org/documentation/sandboxing/)。
 
 ## 实现
 
