@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || !github.event.deleted
+    runs-on: macos-15
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set bundle versions
+        id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == push ]]; then
+            if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+              echo '::error::Release tags must use vMAJOR.MINOR.PATCH, for example v0.1.0.'
+              exit 1
+            fi
+            VERSION="${RELEASE_TAG#v}"
+          else
+            VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' App/Info.plist)"
+          fi
+          for PLIST in App/Info.plist Extension/Info.plist Opener/Info.plist; do
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "$PLIST"
+          done
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Test configuration
+        run: ./script/test.sh
+
+      - name: Build and verify Apple Silicon DMG
+        run: ./script/package_dmg.sh
+
+      - name: Upload verified package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: finder-menu-arm64
+          path: |
+            dist/*.dmg
+            dist/*.dmg.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: finder-menu-arm64
+          path: dist
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.build.outputs.version }}
+        shell: bash
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          PACKAGE="Finder-Menu-$VERSION-arm64.dmg"
+          sha256sum --check "$PACKAGE.sha256"
+          gh release create "$RELEASE_TAG" "$PACKAGE" "$PACKAGE.sha256" \
+            --verify-tag --generate-notes --title "Finder Menu $RELEASE_TAG" \
+            --notes '适用于 Apple Silicon（macOS 14+）。将 App 拖入 Applications 后启动并启用 Finder 扩展。此版本使用 ad-hoc 签名，未进行 Apple 公证，首次打开时可能出现 macOS 安全提示。'

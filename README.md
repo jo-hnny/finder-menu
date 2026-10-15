@@ -45,6 +45,21 @@
 
 打开 DMG，将 Finder Menu 拖入 Applications，再从 Applications 启动，点击「管理…」启用 Finder 扩展。安装包仍使用本地 ad-hoc 签名，未进行 Apple 公证；跨机器安装时可能出现 macOS 安全提示。
 
+## 自动发布
+
+将代码提交并推送后，推送 `vMAJOR.MINOR.PATCH` 格式的 tag 即会触发 GitHub Actions：
+
+```sh
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin v0.1.0
+```
+
+工作流先运行配置测试，再构建和校验 Apple Silicon DMG，最后创建同名 GitHub Release，附上 DMG、SHA-256 校验文件和自动生成的更新说明。版本号从 tag 提取并写入 CI 工作目录中的主应用、扩展和助手，构建号使用 Actions run number，无需提前修改三个 Info.plist。只接受正式版本号，暂不支持 `-beta` 等预发布后缀。
+
+在 Actions → Release → Run workflow 中也可以手动验证打包；手动运行仅保存构建产物，不创建 Release。无需配置额外 Secret，发布使用仓库自带的 `GITHUB_TOKEN`；只有发布步骤所在的 job 有 `contents: write` 权限。已发布的 tag 不应移动或重复使用，后续发布请递增版本号。
+
+CI 包仍为未公证的 ad-hoc 签名版本。自动发布不等同于完成 Apple Developer ID 签名与公证。
+
 ## 实现
 
 - `App/`：SwiftUI 配置窗口、应用选择面板、保存状态。没有菜单栏常驻项。
