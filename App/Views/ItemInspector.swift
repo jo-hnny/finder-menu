@@ -5,6 +5,7 @@ import SwiftUI
 struct ItemInspector: View {
     let item: MenuItem
     let store: MenuStore
+    var isCompact = false
     @Environment(ApplicationCatalog.self) private var catalog
     /// Titles save on Return, focus loss, selection change or quit, not on every keystroke.
     @State private var draftTitle = ""
@@ -24,7 +25,7 @@ struct ItemInspector: View {
                         .foregroundStyle(.primary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
-                        .background(Color("FieldSurface"), in: RoundedRectangle(cornerRadius: 10))
+                        .background(.background.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
                         .overlay {
                             RoundedRectangle(cornerRadius: 10)
                                 .strokeBorder(Color.accentColor.opacity(titleFocused ? 1 : 0.18),
@@ -50,7 +51,7 @@ struct ItemInspector: View {
                     .frame(maxWidth: .infinity)
                     Text(scopeDescription)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.primary.opacity(0.78))
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -69,7 +70,7 @@ struct ItemInspector: View {
                 case .copyPaths:
                     Label("内置操作，可以禁用但不能移除。", systemImage: "lock")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.primary.opacity(0.78))
                         .fixedSize(horizontal: false, vertical: true)
                 case .open(let application):
                     VStack(alignment: .leading, spacing: 10) {
@@ -82,13 +83,13 @@ struct ItemInspector: View {
                         }
                         Text(verbatim: application.bundleIdentifier)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.primary.opacity(0.78))
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
-            .padding(24)
+            .padding(22)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -106,7 +107,6 @@ struct ItemInspector: View {
                 .padding(24)
             }
         }
-        .background(Color("PanelSurface"))
         .onAppear { draftTitle = item.title }
         .onChange(of: titleFocused) { _, focused in if !focused { commitTitle() } }
         .onDisappear(perform: commitTitle)
@@ -122,28 +122,34 @@ struct ItemInspector: View {
                     commitTitle()
                     store.selectedID = nil
                 } label: {
-                    Image(systemName: "xmark").font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 24, height: 24)
-                        .background(Color.accentColor.opacity(0.07), in: Circle())
+                    if isCompact {
+                        Label("返回预览", systemImage: "chevron.backward")
+                            .font(.callout.weight(.medium))
+                            .foregroundStyle(.primary)
+                    } else {
+                        Image(systemName: "xmark").font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .frame(width: 24, height: 24)
+                            .background(.primary.opacity(0.07), in: Circle())
+                    }
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("关闭编辑")
-                .help("关闭编辑")
+                .accessibilityLabel(isCompact ? "返回预览" : "关闭编辑")
+                .help(isCompact ? "返回预览" : "关闭编辑")
             }
             HStack(spacing: 12) {
-                ItemIcon(item: item, size: 40)
+                ItemIcon(item: item, size: 44)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title).font(.headline).lineLimit(2)
                     Text(item.isRemovable ? "应用操作" : "内置操作")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(Color.primary.opacity(0.78))
                 }
             }
         }
     }
 
     private func fieldLabel(_ title: LocalizedStringKey) -> some View {
-        Text(title).font(.caption.weight(.medium)).foregroundStyle(.secondary)
+        Text(title).font(.caption.weight(.medium)).foregroundStyle(Color.primary.opacity(0.78))
     }
 
     private var scopeDescription: LocalizedStringKey {
