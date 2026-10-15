@@ -1,62 +1,76 @@
-import AppKit
+import FinderMenuCore
+import Foundation
 import Observation
 
 @MainActor @Observable
 final class MenuStore {
-    private(set) var entries: [MenuEntry] = []
-    private(set) var loaded = false
-    var errorMessage: String?
-    private let repository = ConfigurationRepository()
+    private(set) var configuration = MenuConfiguration(items: [])
+    /// Editing stays off when the saved configuration cannot be read, so it is never overwritten.
+    private(set) var isLoaded = false
+    private(set) var message: String?
+    var selectedID: UUID?
+
+    private let preferences = PreferencesStore.shared
 
     init() {
         do {
-            entries = try repository.load().entries
-            loaded = true
-        } catch { errorMessage = error.localizedDescription }
+            configuration = try preferences.loadConfiguration()
+            isLoaded = true
+        } catch { message = error.localizedDescription }
+        do { try preferences.ensureSigningKey() } catch { message = message ?? error.localizedDescription }
     }
 
-    func update(_ entry: MenuEntry) {
-        var next = entries
-        guard let index = next.firstIndex(where: { $0.id == entry.id }) else { return }
-        next[index] = entry
-        commit(next)
+    var items: [MenuItem] { configuration.items }
+    var selectedItem: MenuItem? { selectedID.flatMap(configuration.item(id:)) }
+
+    func update(_ item: MenuItem) { mutate { $0.update(item) } }
+
+    /// Empty titles are ignored and the previous title stays in place.
+    func rename(id: UUID, to title: String) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, var item = configuration.item(id: id) else { return }
+        item.title = trimmed
+        update(item)
     }
 
-    func move(_ id: UUID, to target: UUID) {
-        guard let from = entries.firstIndex(where: { $0.id == id }),
-              let to = entries.firstIndex(where: { $0.id == target }), from != to else { return }
-        var next = entries
-        next.insert(next.remove(at: from), at: to)
-        commit(next)
+    func move(fromOffsets source: IndexSet, toOffset destination: Int) {
+        mutate { $0.move(fromOffsets: source, toOffset: destination) }
     }
 
-    func remove(_ id: UUID) {
-        commit(entries.filter { $0.id != id || $0.kind == .copyPaths })
+    func canMoveSelected(by offset: Int) -> Bool {
+        guard let index = selectedIndex else { return false }
+        return items.indices.contains(index + offset)
     }
 
-    func add(_ urls: [URL]) {
-        var next = entries
-        for url in urls {
-            guard let bundle = Bundle(url: url), let identifier = bundle.bundleIdentifier,
-                  bundle.object(forInfoDictionaryKey: "CFBundlePackageType") as? String == "APPL" else {
-                errorMessage = "请选择有效的 macOS 应用（.app）。"
-                return
-            }
-            guard identifier != "dev.jojo.FinderMenu", identifier != "dev.jojo.FinderMenu.Opener" else { continue }
-            guard !next.contains(where: { $0.bundleIdentifier == identifier }) else { continue }
-            let name = FileManager.default.displayName(atPath: url.path).replacingOccurrences(of: ".app", with: "")
-            next.append(MenuEntry(id: UUID(), kind: .application, title: "用 \(name) 打开", enabled: true,
-                                  scope: .both, bundleIdentifier: identifier, applicationPath: url.path))
-        }
-        commit(next)
+    func moveSelected(by offset: Int) {
+        guard canMoveSelected(by: offset), let index = selectedIndex else { return }
+        move(fromOffsets: [index], toOffset: offset > 0 ? index + offset + 1 : index + offset)
     }
 
-    private func commit(_ next: [MenuEntry]) {
-        guard loaded else { return }
+    func remove(id: UUID) {
+        mutate { $0.remove(id: id) }
+        if selectedID == id, configuration.item(id: id) == nil { selectedID = nil }
+    }
+
+    func addApplications(at urls: [URL]) {
+        let candidates = urls.compactMap(ApplicationResolver.candidate(at:))
+        mutate { $0.addApplications(candidates) }
+        let skipped = urls.count - candidates.count
+        if skipped > 0 { message = String(localized: "已跳过 \(skipped) 个无效的应用。") }
+    }
+
+    private var selectedIndex: Int? { items.firstIndex { $0.id == selectedID } }
+
+    /// Saves first and only then publishes, so a failed save keeps the last saved list on screen.
+    private func mutate(_ change: (inout MenuConfiguration) -> Void) {
+        guard isLoaded else { return }
+        var next = configuration
+        change(&next)
+        guard next != configuration else { return }
         do {
-            try repository.save(MenuConfiguration(entries: next))
-            entries = next
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+            try preferences.save(next)
+            configuration = next
+            message = nil
+        } catch { message = error.localizedDescription }
     }
 }

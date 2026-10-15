@@ -1,46 +1,60 @@
 import AppKit
+import FinderMenuCore
 import OSLog
+
+enum OpenerError: LocalizedError {
+    case itemUnavailable, applicationMissing
+
+    var errorDescription: String? {
+        switch self {
+        case .itemUnavailable: return String(localized: "这个菜单项已被禁用、移除，或不适用于所选项目。")
+        case .applicationMissing: return String(localized: "找不到这个应用，请在 Finder Menu 中重新添加。")
+        }
+    }
+}
 
 // LaunchServices starts a fresh, short-lived agent for each open action.
 // It never launches the configuration app, runs a shell, or registers at login.
+@MainActor
 final class OpenerDelegate: NSObject, NSApplicationDelegate {
-    private let logger = Logger(subsystem: "dev.jojo.FinderMenu", category: "Opener")
-
+    private let logger = Logger(subsystem: FinderMenuIdentity.logSubsystem, category: "Opener")
     private var receivedRequest = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Opening this internal helper directly should not leave a resident process.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [self] in
+        Task {
+            try? await Task.sleep(for: .seconds(10))
             if !receivedRequest { NSApp.terminate(nil) }
         }
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
         receivedRequest = true
+        let preferences = PreferencesStore.shared
+        let request: OpenRequest
         do {
-            guard urls.count == 1,
-                  let request = URLComponents(url: urls[0], resolvingAgainstBaseURL: false),
-                  request.scheme == "findermenu-open", request.host == "open",
-                  let id = UUID(uuidString: String(request.path.dropFirst())),
-                  let payload = request.queryItems?.first(where: { $0.name == "paths" })?.value,
-                  let data = Data(base64Encoded: payload) else {
-                throw ConfigurationError.invalid
+            guard urls.count == 1, let key = preferences.signingKey() else { throw OpenRequest.Failure.malformed }
+            request = try OpenRequest.verified(from: urls[0], key: key)
+        } catch {
+            // Unauthenticated callers get no UI: log and exit so they cannot drive alerts either.
+            logger.error("Rejected open request: \(error.localizedDescription, privacy: .public)")
+            NSApp.terminate(nil)
+            return
+        }
+        do {
+            let targets = request.paths.map { URL(fileURLWithPath: $0) }
+            guard let item = try preferences.loadConfiguration().item(id: request.itemID), item.isEnabled,
+                  let reference = item.action.application,
+                  let selection = SelectionKind(classifying: targets), item.scope.accepts(selection) else {
+                throw OpenerError.itemUnavailable
             }
-            let paths = try JSONDecoder().decode([String].self, from: data)
-            guard !paths.isEmpty, paths.allSatisfy({ $0.hasPrefix("/") && !$0.contains("\0") }),
-                  let entry = try ConfigurationRepository().load().entries.first(where: { $0.id == id }),
-                  entry.kind == .application, entry.enabled,
-                  let application = entry.applicationURL else {
-                throw ConfigurationError.invalid
-            }
-            let urls = paths.map { URL(fileURLWithPath: $0) }
-            guard entry.applies(to: urls) else { throw ConfigurationError.invalid }
-            NSWorkspace.shared.open(urls, withApplicationAt: application, configuration: .init()) { [self] _, error in
-                DispatchQueue.main.async {
+            guard let applicationURL = ApplicationResolver.url(for: reference) else { throw OpenerError.applicationMissing }
+            NSWorkspace.shared.open(targets, withApplicationAt: applicationURL, configuration: .init()) { _, error in
+                Task { @MainActor in
                     if let error {
                         self.fail(error)
                     } else {
-                        self.logger.notice("Open succeeded: app=\(entry.bundleIdentifier ?? "", privacy: .public), count=\(urls.count)")
+                        self.logger.notice("Open succeeded: app=\(reference.bundleIdentifier, privacy: .public), count=\(targets.count)")
                         NSApp.terminate(nil)
                     }
                 }
@@ -50,9 +64,9 @@ final class OpenerDelegate: NSObject, NSApplicationDelegate {
 
     private func fail(_ error: Error) {
         logger.error("Open failed: \(error.localizedDescription, privacy: .public)")
-        NSApp.activate(ignoringOtherApps: true)
+        NSApp.activate()
         let alert = NSAlert()
-        alert.messageText = "无法使用所选应用打开"
+        alert.messageText = String(localized: "无法使用所选应用打开")
         alert.informativeText = error.localizedDescription
         alert.runModal()
         NSApp.terminate(nil)

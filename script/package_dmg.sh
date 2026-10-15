@@ -4,7 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/.build/Packaging"
 APP_BUNDLE="$BUILD_DIR/Build/Products/Release/Finder Menu.app"
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/App/Info.plist")"
+# CI passes MARKETING_VERSION / CURRENT_PROJECT_VERSION; local builds use Config/Base.xcconfig.
+VERSION="${MARKETING_VERSION:-$(awk -F' = ' '$1 == "MARKETING_VERSION" { print $2 }' "$ROOT_DIR/Config/Base.xcconfig")}"
+BUILD_NUMBER="${CURRENT_PROJECT_VERSION:-$(awk -F' = ' '$1 == "CURRENT_PROJECT_VERSION" { print $2 }' "$ROOT_DIR/Config/Base.xcconfig")}"
 OUTPUT="$ROOT_DIR/dist/Finder-Menu-$VERSION-arm64.dmg"
 
 mkdir -p "$BUILD_DIR" "$ROOT_DIR/dist"
@@ -20,7 +22,8 @@ trap cleanup EXIT
 
 xcodebuild -quiet -project "$ROOT_DIR/FinderMenu.xcodeproj" \
   -scheme FinderMenu -configuration Release -destination 'generic/platform=macOS' \
-  -derivedDataPath "$BUILD_DIR" ARCHS=arm64 ONLY_ACTIVE_ARCH=NO build
+  -derivedDataPath "$BUILD_DIR" ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+  MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" build
 
 codesign --verify --deep --strict --all-architectures "$APP_BUNDLE"
 for BINARY in \
@@ -28,6 +31,13 @@ for BINARY in \
   "$APP_BUNDLE/Contents/PlugIns/FinderMenuExtension.appex/Contents/MacOS/FinderMenuExtension" \
   "$APP_BUNDLE/Contents/Helpers/FinderMenuOpener.app/Contents/MacOS/FinderMenuOpener"; do
   [[ "$(/usr/bin/lipo -archs "$BINARY")" == arm64 ]]
+done
+for PLIST in \
+  "$APP_BUNDLE/Contents/Info.plist" \
+  "$APP_BUNDLE/Contents/PlugIns/FinderMenuExtension.appex/Contents/Info.plist" \
+  "$APP_BUNDLE/Contents/Helpers/FinderMenuOpener.app/Contents/Info.plist"; do
+  [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PLIST")" == "$VERSION" ]]
+  [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$PLIST")" == "$BUILD_NUMBER" ]]
 done
 
 mkdir "$STAGING/content" "$MOUNT_POINT"

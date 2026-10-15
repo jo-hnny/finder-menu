@@ -1,0 +1,116 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "仅文件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files Only"
+          }
+        }
+      }
+    },
+    "仅文件夹": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folders Only"
+          }
+        }
+      }
+    },
+    "复制路径": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Path"
+          }
+        }
+      }
+    },
+    "所选项目的路径无效。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected item paths are invalid."
+          }
+        }
+      }
+    },
+    "打开请求已过期，请在 Finder 中重新操作。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The open request expired. Try again in Finder."
+          }
+        }
+      }
+    },
+    "打开请求无效，已拒绝。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The open request is invalid and was rejected."
+          }
+        }
+      }
+    },
+    "文件与文件夹": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files and Folders"
+          }
+        }
+      }
+    },
+    "无法保存菜单配置，请重试。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save the menu configuration. Try again."
+          }
+        }
+      }
+    },
+    "用 %@ 打开": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open with %@"
+          }
+        }
+      }
+    },
+    "菜单配置无法读取，原配置已保留。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The menu configuration can't be read. The existing configuration was kept."
+          }
+        }
+      }
+    },
+    "菜单配置来自更新版本的 Finder Menu，请升级后再修改。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The menu configuration comes from a newer Finder Menu. Update the app before editing it."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
