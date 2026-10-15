@@ -76,11 +76,16 @@ public struct MenuConfiguration: Equatable, Sendable {
 
     public init(items: [MenuItem]) { self.items = items }
 
-    public static let defaults = MenuConfiguration(items: [
-        MenuItem(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, title: "复制路径", action: .copyPaths),
-        MenuItem(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, title: "用 Visual Studio Code 打开",
-                 action: .open(application: ApplicationRef(bundleIdentifier: "com.microsoft.VSCode")))
-    ])
+    /// Titles follow the current language; once saved they are user data and stay as written.
+    public static var defaults: MenuConfiguration {
+        MenuConfiguration(items: [
+            MenuItem(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
+                     title: String(localized: "复制路径", bundle: .module), action: .copyPaths),
+            MenuItem(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
+                     title: String(localized: "用 \("Visual Studio Code") 打开", bundle: .module),
+                     action: .open(application: ApplicationRef(bundleIdentifier: "com.microsoft.VSCode")))
+        ])
+    }
 
     public func item(id: UUID) -> MenuItem? { items.first { $0.id == id } }
 

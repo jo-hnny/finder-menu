@@ -21,6 +21,16 @@
         }
       }
     },
+    "复制路径": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Path"
+          }
+        }
+      }
+    },
     "所选项目的路径无效。": {
       "localizations": {
         "en": {
