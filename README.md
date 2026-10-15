@@ -24,13 +24,18 @@
 
 也可以使用 Codex 的 Run 按钮，或在 Xcode 中打开 `FinderMenu.xcodeproj`，运行 `FinderMenu` scheme。
 
-产物位于 `.build/DerivedData/Build/Products/Debug/Finder Menu.app`。脚本注册此处的扩展，不复制到 Applications，不修改其他 Finder 扩展。首次运行点击底部「扩展设置…」，在系统设置中开启 Finder Menu；若已启用，后续运行脚本会重新加载本扩展。
+产物位于 `.build/DerivedData/Build/Products/Debug/Finder Menu.app`，不复制到 Applications。Xcode 构建会自动注册应用；若检测到已有的其他扩展副本（包括 Applications 中的安装版），脚本会在结束时注销开发扩展的登记、恢复原扩展，并仅在原本已启用时重新加载。构建失败或收到 INT/TERM 信号时也会执行恢复。构建期间菜单可能短暂重载，已关闭的扩展不会被自动开启。
+
+有其他副本时，默认只构建，不启动同名开发应用。此保护适用于脚本；直接在 Xcode 中运行仍可能注册开发副本。
+
+没有其他副本时，脚本会注册并启动开发版本。首次运行点击底部「扩展设置…」，在系统设置中开启 Finder Menu；若已启用，脚本会重新加载本扩展。确需测试开发副本时，可显式添加 `--allow-extension-reload`，允许注册、启动及重新加载；这可能影响已安装版本的右键菜单。
 
 ```sh
-./script/build_and_run.sh --build-only # 构建及校验签名
-./script/build_and_run.sh --verify     # 构建、启动并检查主应用进程
-./script/build_and_run.sh --telemetry  # 构建、启动并观察操作日志
-./script/build_and_run.sh --debug      # 用 LLDB 启动主应用
+./script/build_and_run.sh --build-only # 构建及校验签名，结束后恢复已有扩展
+./script/build_and_run.sh --verify     # 无其他副本时，启动并检查主应用进程
+./script/build_and_run.sh --telemetry  # 无其他副本时，启动并观察操作日志
+./script/build_and_run.sh --debug      # 无其他副本时，用 LLDB 启动主应用
+./script/build_and_run.sh run --allow-extension-reload # 显式允许开发副本影响现有扩展
 ./script/test.sh                      # FinderMenuCore 单元测试（swift test）
 ```
 
