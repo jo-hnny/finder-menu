@@ -24,8 +24,11 @@ final class FinderSync: FIFinderSync {
         nonisolated(unsafe) let target = self
         nonisolated(unsafe) var menu: NSMenu?
         Self.onMain {
-            menu = target.buildMenu(for: menuKind)
-            target.logger.info("Menu loaded: count=\(menu?.items.count ?? 0), elapsed_ms=\((ProcessInfo.processInfo.systemUptime - started) * 1000)")
+            let builtMenu = target.buildMenu(for: menuKind)
+            let count = builtMenu?.items.count ?? 0
+            let elapsed = (ProcessInfo.processInfo.systemUptime - started) * 1000
+            target.logger.info("Menu loaded: count=\(count), elapsed_ms=\(elapsed)")
+            menu = builtMenu
         }
         return menu
     }
