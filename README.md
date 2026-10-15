@@ -1,65 +1,69 @@
-<h1 align="center">Finder Menu</h1>
-
-<p align="center"><strong>让 Finder 右键菜单，更顺手。</strong></p>
-<p align="center">把常用应用和复制路径放进右键菜单，少一次拖拽，少一次切换。</p>
-
 <p align="center">
-  <a href="https://github.com/jo-hnny/finder-menu/releases/latest"><strong>下载 Mac 版</strong></a>
-  &nbsp; · &nbsp;
-  <a href="#开始使用">开始使用</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-![Finder Menu 浅色界面：左侧管理常用操作，右侧预览文件夹的右键菜单](docs/images/overview-light.jpg)
+<h1 align="center">Finder Menu</h1>
 
-<p align="center"><sub>当前开发版实机预览 · macOS 27 · 浅色外观。已发布版本的界面可能有所不同。</sub></p>
+<p align="center"><strong>Your favorite apps, one right-click away.</strong></p>
+<p align="center">A macOS Finder context menu utility. Add your favorite apps, copy paths, and spend less time dragging files between windows.</p>
 
-## 常用操作，右键就到
+<p align="center">
+  <a href="https://github.com/jo-hnny/finder-menu/releases/latest"><strong>Download for Mac</strong></a>
+  &nbsp; · &nbsp;
+  <a href="#get-started">Get started</a>
+</p>
 
-选中文件或文件夹，直接用你指定的应用打开；需要分享位置或粘贴到终端时，一键复制路径。你决定菜单里留下什么，以及它们出现的顺序。
+![Finder Menu in light mode: manage custom actions on the left and preview the folder context menu on the right](docs/images/overview-light-en.jpg)
 
-- **把常用应用放进来。** 选择一个或多个应用，就能为它们添加打开入口，显示熟悉的应用图标。
-- **只在需要时出现。** 为每个操作选择「仅文件」「仅文件夹」或「全部」，让文件和文件夹各有合适的菜单。
-- **按你的习惯排列。** 拖动排序、修改名称，暂时不用的操作可以随手关闭。
-- **改完就能看见。** 切换文件与文件夹预览，检查菜单的内容和顺序；修改自动保存。
+<p align="center"><sub>macOS 27 · Light appearance. The interface may vary slightly across macOS versions.</sub></p>
 
-## 一边整理，一边预览
+## Everyday actions, a right-click away
 
-左侧固定显示菜单项目，选中即可编辑。宽窗口把列表、编辑和预览并排展开；小窗口在编辑与预览之间切换，保持你设定的窗口大小。
+Select a file or folder and open it directly in an app you choose. Copy its path when you need to share a location or paste it into a terminal. You decide which actions appear and in what order.
 
-![Finder Menu 深色编辑界面：固定菜单列表、名称与显示范围设置，以及高亮对应操作的菜单预览](docs/images/editor-dark.jpg)
+- **Add the apps you use.** Choose one or more applications to create menu entries with their familiar icons.
+- **Show actions where they belong.** Set each action to appear for files, folders, or both.
+- **Make the menu yours.** Drag to reorder, rename entries, and switch off actions you do not need right now.
+- **See changes as you go.** Preview file and folder menus to check their contents and order. Changes save automatically.
 
-<p align="center"><sub>当前开发版实机预览 · 深色外观 · 选中菜单项时同步高亮预览。</sub></p>
+## Organize and preview side by side
 
-界面跟随系统的浅色与深色外观。macOS 26 及更新版本使用 Liquid Glass，较早版本使用系统材质，并支持「减少动态效果」和「降低透明度」。界面提供简体中文与英文。
+Your menu list stays visible on the left. Select an entry to edit it. Wide windows show the list, editor, and preview together; smaller windows switch between editing and previewing without changing the window size you chose.
 
-设置完成后，可以直接退出配置窗口。Finder 菜单仍然可用，无需一直开着应用。
+![Finder Menu in dark mode: a fixed menu list, title and scope settings, and a live preview highlighting the selected action](docs/images/editor-dark-en.jpg)
 
-## 开始使用
+<p align="center"><sub>macOS 27 · Dark appearance · The selected action is highlighted in the preview.</sub></p>
 
-适用于 **Apple Silicon Mac，macOS 14 或更新版本**。当前提供的安装包不支持 Intel Mac。
+Finder Menu follows your system's light or dark appearance. It uses Liquid Glass on macOS 26 and later, with system materials on earlier versions, and respects Reduce Motion and Reduce Transparency. The app is available in **English and Simplified Chinese**.
 
-1. 从 [Releases 下载 DMG 安装包](https://github.com/jo-hnny/finder-menu/releases/latest)，打开后将 **Finder Menu** 拖入 **Applications（应用程序）**。
-2. 启动 Finder Menu，点击底部的 **「扩展设置…」**，在系统设置中启用 Finder Menu 扩展。
-3. 点击 **「添加应用」**，选好常用应用，再回到 Finder 中右键文件或文件夹试试。
+Once your menu is set up, you can quit the configuration app. Your Finder actions remain available.
 
-当前安装包尚未经过 Apple 公证，首次打开可能遇到 macOS 安全提示。
+## Get started
 
-后续可在应用菜单中选择 **「检查更新…」**。安装或升级后，请先启动一次 Finder Menu，再使用「用 … 打开」。
+Requires an **Apple Silicon Mac running macOS 14 or later**. Current release packages do not support Intel Macs.
 
-## 你可能想知道
+1. [Download the DMG from Releases](https://github.com/jo-hnny/finder-menu/releases/latest), open it, and drag **Finder Menu** into **Applications**.
+2. Launch Finder Menu, click **Extension Settings…** at the bottom, and enable the Finder Menu extension in System Settings.
+3. Click **Add App**, choose your favorite applications, then right-click a file or folder in Finder to try them out.
 
-**添加应用后，任何文件都能打开吗？**
+Current release packages are not notarized by Apple. macOS may display a security warning the first time you open the app.
 
-能处理哪些文件或文件夹，取决于所选应用本身。可以按实际用途设置显示范围，例如只在文件夹菜单中显示代码编辑器。
+For future updates, choose **Check for Updates…** from the app menu. After installing or upgrading, launch Finder Menu once before using an “Open with…” action.
 
-**能调整 Finder 自带菜单的顺序吗？**
+## A few useful details
 
-Finder Menu 管理自己添加的操作，不改变 Finder 的系统菜单。窗口中灰色的系统菜单项仅用于示意。
+**Can an added app open every file?**
 
-**需要停用时怎么做？**
+Supported files and folders depend on the application itself. Set the display scope to match how you use it—for example, show your code editor only in folder menus.
 
-关闭列表中的开关即可隐藏单个操作；要停用整个工具，在系统设置中关闭 Finder Menu 扩展。
+**Can I reorder Finder's built-in menu items?**
+
+Finder Menu manages the actions it adds; it does not change Finder's system menu. Gray system entries in the preview are illustrative.
+
+**How do I turn it off?**
+
+Use an entry's switch to hide an individual action. To disable the entire tool, turn off the Finder Menu extension in System Settings.
 
 ---
 
-[下载 Finder Menu](https://github.com/jo-hnny/finder-menu/releases/latest) · [反馈问题](https://github.com/jo-hnny/finder-menu/issues) · [开发指南](docs/DEVELOPMENT.md)
+[Download Finder Menu](https://github.com/jo-hnny/finder-menu/releases/latest) · [Report an issue](https://github.com/jo-hnny/finder-menu/issues) · [Developer guide (中文)](docs/DEVELOPMENT.md)
