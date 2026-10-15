@@ -1,6 +1,26 @@
 {
   "sourceLanguage": "zh-Hans",
   "strings": {
+    "返回预览": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to Preview"
+          }
+        }
+      }
+    },
+    "更改会实时显示在预览中。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes appear in the preview as you edit."
+          }
+        }
+      }
+    },
     "检查更新…": {
       "localizations": {
         "en": {

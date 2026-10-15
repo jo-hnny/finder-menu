@@ -9,7 +9,6 @@ struct StatusBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Divider()
             HStack(spacing: 16) {
                 HStack(spacing: 8) {
                     Image(systemName: extensionStatus == .unconfirmed ? "questionmark.circle" : "checkmark.circle.fill")
@@ -21,7 +20,7 @@ struct StatusBar: View {
 
                 Button("扩展设置…") { FIFinderSyncController.showExtensionManagementInterface() }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.primary)
 
                 Spacer(minLength: 24)
 
@@ -38,15 +37,20 @@ struct StatusBar: View {
 
                 Button("退出应用") { NSApp.terminate(nil) }
                     .buttonStyle(.bordered)
+                    .tint(.primary)
+                    .foregroundStyle(.primary)
                     .controlSize(.small)
                     .help("退出配置应用后，Finder 菜单仍然可用。")
             }
-            .font(.callout)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 10)
+            .font(.caption)
+            .foregroundStyle(Color.primary.opacity(0.78))
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
         }
-        .background(Color("PanelSurface"))
+        .modifier(GlassSurface(cornerRadius: 16))
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
+        .padding(.top, 6)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             extensionStatus = FinderExtensionStatus.read()
         }

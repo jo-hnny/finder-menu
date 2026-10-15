@@ -10,19 +10,20 @@ struct MenuRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var handleHovered = false
     @State private var isDropTarget = false
+    @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 10) {
             dragHandle
             Button { store.selectedID = item.id } label: {
                 HStack(spacing: 10) {
-                    ItemIcon(item: item, size: 28)
+                    ItemIcon(item: item, size: 32)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.title)
                             .fontWeight(.medium)
                             .foregroundStyle(item.isEnabled ? .primary : .secondary)
                             .lineLimit(2)
-                        Text(subtitle).font(.caption).foregroundStyle(.secondary)
+                        Text(subtitle).font(.caption).foregroundStyle(Color.primary.opacity(0.78))
                     }
                     .multilineTextAlignment(.leading)
                     Spacer(minLength: 8)
@@ -41,15 +42,17 @@ struct MenuRow: View {
             }))
             .labelsHidden().toggleStyle(.switch).controlSize(.mini)
         }
-        .padding(.horizontal, 10).padding(.vertical, 12)
+        .padding(.horizontal, 10).padding(.vertical, 14)
         .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.accentColor.opacity(isDropTarget ? 0.16 : store.selectedID == item.id ? 0.08 : 0))
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color.accentColor.opacity(isDropTarget ? 0.2 : store.selectedID == item.id ? 0.13 : isHovered ? 0.06 : 0))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(Color.accentColor.opacity(store.selectedID == item.id || isDropTarget ? 0.14 : 0))
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color.accentColor.opacity(store.selectedID == item.id || isDropTarget ? 0.24 : 0))
                 }
         }
+        .onHover { isHovered = $0 }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.16), value: isHovered)
         .onDrag { NSItemProvider(object: item.id.uuidString as NSString) }
         .onDrop(of: [UTType.text], isTargeted: $isDropTarget) { providers in
             guard let provider = providers.first, provider.canLoadObject(ofClass: NSString.self) else { return false }
@@ -119,6 +122,7 @@ private struct DragHandleCursor: NSViewRepresentable {
 struct ItemIcon: View {
     let item: MenuItem
     let size: CGFloat
+    var isHighlighted = false
     @Environment(ApplicationCatalog.self) private var catalog
 
     var body: some View {
@@ -127,7 +131,7 @@ struct ItemIcon: View {
             case .copyPaths:
                 Image(systemName: "doc.on.doc")
                     .font(.system(size: size * 0.5))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(isHighlighted ? Color.white : Color.primary)
                     .frame(width: size, height: size)
                     .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: size * 0.25))
             case .open(let application):
