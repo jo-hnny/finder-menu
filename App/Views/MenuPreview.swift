@@ -4,6 +4,7 @@ import SwiftUI
 struct MenuPreview: View {
     let configuration: MenuConfiguration
     let highlightedID: UUID?
+    let dismissEditor: () -> Void
     @State private var target: SelectionKind = .folders
 
     var body: some View {
@@ -19,29 +20,54 @@ struct MenuPreview: View {
             }
             .padding(.bottom, 24)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    HStack(spacing: 12) {
-                        Image(systemName: target == .folders ? "folder.fill" : "doc.text")
-                            .font(.system(size: 32)).foregroundStyle(.tint)
-                            .frame(width: 42, height: 42)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(verbatim: target == .folders ? "My Project" : "README.md").font(.callout.weight(.medium))
-                            Text(target == .folders ? "文件夹" : "Markdown 文档").font(.caption).foregroundStyle(.secondary)
-                        }
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        previewContent
+                        Color.clear.contentShape(Rectangle())
+                            .onTapGesture(perform: dismissEditor)
                     }
-                    .padding(.horizontal, 14)
-                    menu
+                    .frame(minHeight: geometry.size.height, alignment: .top)
                 }
-                .frame(maxWidth: 340).padding(4).padding(.bottom, 28)
-                .frame(maxWidth: .infinity)
             }
 
             Text("预览本应用菜单的内容与顺序；灰色系统项仅为示意")
                 .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.top, 12)
         }
         .padding(24)
-        .background(.quinary)
+        .background(Color("CanvasSurface"))
+        .onChange(of: highlightedID, initial: true) { _, _ in revealHighlightedItem() }
+        .onChange(of: highlightedScope) { _, _ in revealHighlightedItem() }
+    }
+
+    private var previewContent: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 12) {
+                Image(systemName: target == .folders ? "folder.fill" : "doc.text")
+                    .font(.system(size: 32)).foregroundStyle(.tint)
+                    .frame(width: 42, height: 42)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(verbatim: target == .folders ? "My Project" : "README.md").font(.callout.weight(.medium))
+                    Text(target == .folders ? "文件夹" : "Markdown 文档").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 14)
+            menu
+        }
+        .frame(maxWidth: 340).padding(4).padding(.bottom, 28)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var highlightedScope: MenuScope? {
+        highlightedID.flatMap { configuration.item(id: $0)?.scope }
+    }
+
+    private func revealHighlightedItem() {
+        switch highlightedScope {
+        case .files: target = .files
+        case .folders: target = .folders
+        case .all, nil: break
+        }
     }
 
     private var menu: some View {
@@ -60,9 +86,9 @@ struct MenuPreview: View {
             systemRow("快速操作", shortcut: "›")
         }
         .padding(6)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 11))
-        .overlay(RoundedRectangle(cornerRadius: 11).strokeBorder(.separator))
-        .shadow(color: .black.opacity(0.15), radius: 18, y: 10)
+        .background(Color("FieldSurface"), in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.accentColor.opacity(0.12)))
+        .shadow(color: Color.accentColor.opacity(0.08), radius: 20, y: 8)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("右键菜单预览")
     }
@@ -71,6 +97,7 @@ struct MenuPreview: View {
         let highlighted = item.id == highlightedID
         return HStack(spacing: 9) {
             ItemIcon(item: item, size: 17)
+                .tint(highlighted ? Color.white : Color.accentColor)
             Text(item.title).lineLimit(2)
             Spacer(minLength: 0)
         }

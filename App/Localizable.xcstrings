@@ -91,6 +91,76 @@
         }
       }
     },
+    "仅在选中文件夹时显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show only when folders are selected."
+          }
+        }
+      }
+    },
+    "仅在选中文件时显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show only when files are selected."
+          }
+        }
+      }
+    },
+    "仅文件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files"
+          }
+        }
+      }
+    },
+    "仅文件夹": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folders"
+          }
+        }
+      }
+    },
+    "全部": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        }
+      }
+    },
+    "关闭编辑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close Editor"
+          }
+        }
+      }
+    },
+    "内置操作": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in action"
+          }
+        }
+      }
+    },
     "内置操作 · %@": {
       "localizations": {
         "en": {
@@ -151,6 +221,16 @@
         }
       }
     },
+    "在文件和文件夹的右键菜单中显示。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in the context menu for files and folders."
+          }
+        }
+      }
+    },
     "在菜单中显示": {
       "localizations": {
         "en": {
@@ -187,6 +267,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Application"
+          }
+        }
+      }
+    },
+    "应用操作": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Application action"
           }
         }
       }
@@ -231,12 +321,42 @@
         }
       }
     },
+    "拖动 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag %@"
+          }
+        }
+      }
+    },
+    "拖动左侧手柄排序 · 选中项目编辑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the handle to reorder · Select an item to edit"
+          }
+        }
+      }
+    },
     "拖动排序 · 选中项目编辑名称和显示范围": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Drag to reorder · Select an item to edit its name and scope"
+          }
+        }
+      }
+    },
+    "拖动调整顺序": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to reorder"
           }
         }
       }
@@ -327,6 +447,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Manage…"
+          }
+        }
+      }
+    },
+    "编辑 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %@"
+          }
+        }
+      }
+    },
+    "编辑菜单项": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Menu Item"
           }
         }
       }
