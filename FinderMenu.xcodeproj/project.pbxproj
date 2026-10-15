@@ -1,0 +1,444 @@
+// !$*UTF8*$!
+{
+	"classes" = {
+	};
+	"objectVersion" = "56";
+	"archiveVersion" = "1";
+	"objects" = {
+        "000000000000000000000130" = {
+            "isa" = "PBXFileReference";
+            "lastKnownFileType" = "folder.assetcatalog";
+            "path" = "Assets.xcassets";
+            "sourceTree" = "<group>";
+        };
+        "000000000000000000000131" = {
+            "isa" = "PBXBuildFile";
+            "fileRef" = "000000000000000000000130";
+        };
+        "000000000000000000000132" = {
+            "isa" = "PBXResourcesBuildPhase";
+            "buildActionMask" = "2147483647";
+            "files" = ("000000000000000000000131");
+            "runOnlyForDeploymentPostprocessing" = "0";
+        };
+        "000000000000000000000120" = {
+            "isa" = "PBXFileReference";
+            "lastKnownFileType" = "sourcecode.swift";
+            "path" = "App/Views/MenuPreview.swift";
+            "sourceTree" = "SOURCE_ROOT";
+        };
+        "000000000000000000000121" = {
+            "isa" = "PBXBuildFile";
+            "fileRef" = "000000000000000000000120";
+        };
+		"00000000000000000000001E" = {
+			"isa" = "XCConfigurationList";
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Debug";
+			"buildConfigurations" = ("00000000000000000000003C", "00000000000000000000003D");
+		};
+		"000000000000000000000034" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "00000000000000000000002A";
+		};
+		"000000000000000000000041" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"CODE_SIGN_ENTITLEMENTS" = "Extension/FinderMenuExtension.entitlements";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks", "@executable_path/../../../../Frameworks");
+				"INFOPLIST_FILE" = "Extension/Info.plist";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu.Extension";
+				"SKIP_INSTALL" = "YES";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+			};
+		};
+		"000000000000000000000020" = {
+			"isa" = "XCConfigurationList";
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Debug";
+			"buildConfigurations" = ("000000000000000000000040", "000000000000000000000041");
+		};
+		"00000000000000000000003E" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"INFOPLIST_FILE" = "App/Info.plist";
+                "ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"CODE_SIGN_ENTITLEMENTS" = "App/FinderMenu.entitlements";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks");
+				"EXECUTABLE_NAME" = "FinderMenu";
+				"PRODUCT_NAME" = "Finder Menu";
+			};
+		};
+		"000000000000000000000005" = {
+			"isa" = "PBXGroup";
+			"name" = "Products";
+			"children" = ("000000000000000000000030", "000000000000000000000031", "00000000000000000000010E");
+			"sourceTree" = "<group>";
+		};
+		"00000000000000000000000A" = {
+			"buildConfigurationList" = "00000000000000000000001F";
+			"productReference" = "000000000000000000000030";
+			"productType" = "com.apple.product-type.application";
+			"productName" = "Finder Menu";
+			"isa" = "PBXNativeTarget";
+			"buildPhases" = ("000000000000000000000014", "000000000000000000000132", "000000000000000000000016", "000000000000000000000116");
+			"dependencies" = ("000000000000000000000018", "000000000000000000000114");
+			"name" = "FinderMenu";
+			"buildRules" = ();
+		};
+		"000000000000000000000033" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000029";
+		};
+		"000000000000000000000018" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "00000000000000000000000B";
+			"targetProxy" = "000000000000000000000017";
+		};
+		"00000000000000000000002A" = {
+			"path" = "FinderSync.swift";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000040" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"CODE_SIGN_ENTITLEMENTS" = "Extension/FinderMenuExtension.entitlements";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks", "@executable_path/../../../../Frameworks");
+				"INFOPLIST_FILE" = "Extension/Info.plist";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu.Extension";
+				"SKIP_INSTALL" = "YES";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+			};
+		};
+		"00000000000000000000003D" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_IDENTITY" = "-";
+				"COMBINE_HIDPI_IMAGES" = "YES";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"CODE_SIGN_STYLE" = "Manual";
+				"SWIFT_VERSION" = "5.0";
+				"SDKROOT" = "macosx";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+			};
+		};
+		"000000000000000000000004" = {
+			"path" = "Extension";
+			"isa" = "PBXGroup";
+			"children" = ("00000000000000000000002A", "00000000000000000000002D", "00000000000000000000002F");
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000032" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000028";
+		};
+		"000000000000000000000017" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "000000000000000000000001";
+			"remoteGlobalIDString" = "00000000000000000000000B";
+			"remoteInfo" = "FinderMenuExtension";
+			"proxyType" = "1";
+		};
+		"00000000000000000000002F" = {
+			"path" = "FinderMenuExtension.entitlements";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.entitlements";
+			"sourceTree" = "<group>";
+		};
+		"00000000000000000000003C" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_IDENTITY" = "-";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"CODE_SIGN_STYLE" = "Manual";
+				"SDKROOT" = "macosx";
+				"SWIFT_VERSION" = "5.0";
+				"COMBINE_HIDPI_IMAGES" = "YES";
+				"COPY_PHASE_STRIP" = "NO";
+			};
+		};
+		"000000000000000000000003" = {
+			"path" = "App";
+			"isa" = "PBXGroup";
+			"children" = ("000000000000000000000130", "000000000000000000000028", "000000000000000000000029", "00000000000000000000002C", "00000000000000000000002E");
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000031" = {
+			"path" = "FinderMenuExtension.appex";
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.app-extension";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"000000000000000000000016" = {
+			"buildActionMask" = "2147483647";
+			"dstSubfolderSpec" = "13";
+			"isa" = "PBXCopyFilesBuildPhase";
+			"runOnlyForDeploymentPostprocessing" = "0";
+			"dstPath" = "";
+			"files" = ("000000000000000000000035");
+			"name" = "Embed App Extensions";
+		};
+		"00000000000000000000002E" = {
+			"path" = "FinderMenu.entitlements";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.entitlements";
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000029" = {
+			"path" = "ContentView.swift";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000002" = {
+			"isa" = "PBXGroup";
+			"sourceTree" = "<group>";
+			"children" = ("000000000000000000000003", "000000000000000000000004", "000000000000000000000005", "000000000000000000000101", "000000000000000000000103", "000000000000000000000105", "000000000000000000000120", "000000000000000000000108", "00000000000000000000010C");
+		};
+		"000000000000000000000030" = {
+			"path" = "Finder Menu.app";
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"000000000000000000000015" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = ("000000000000000000000034", "00000000000000000000010A");
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"00000000000000000000002D" = {
+			"path" = "Info.plist";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000028" = {
+			"path" = "FinderMenuApp.swift";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"sourceTree" = "<group>";
+		};
+		"000000000000000000000001" = {
+			"buildConfigurationList" = "00000000000000000000001E";
+			"projectDirPath" = "";
+			"projectRoot" = "";
+			"knownRegions" = ("zh_CN", "en", "Base");
+			"isa" = "PBXProject";
+			"compatibilityVersion" = "Xcode 14.0";
+			"productRefGroup" = "000000000000000000000005";
+			"mainGroup" = "000000000000000000000002";
+			"developmentRegion" = "zh_CN";
+			"attributes" = {
+				"LastUpgradeCheck" = "2700";
+			};
+			"targets" = ("00000000000000000000000A", "00000000000000000000000B", "000000000000000000000112");
+		};
+		"00000000000000000000001F" = {
+			"isa" = "XCConfigurationList";
+			"defaultConfigurationIsVisible" = "0";
+			"defaultConfigurationName" = "Debug";
+			"buildConfigurations" = ("00000000000000000000003E", "00000000000000000000003F");
+		};
+		"000000000000000000000035" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000031";
+			"settings" = {
+				"ATTRIBUTES" = ("RemoveHeadersOnCopy");
+			};
+		};
+		"000000000000000000000014" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = "2147483647";
+			"files" = ("000000000000000000000032", "000000000000000000000033", "000000000000000000000102", "000000000000000000000104", "000000000000000000000106", "000000000000000000000121", "000000000000000000000109");
+			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"00000000000000000000002C" = {
+			"path" = "Info.plist";
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"sourceTree" = "<group>";
+		};
+		"00000000000000000000000B" = {
+			"buildConfigurationList" = "000000000000000000000020";
+			"productReference" = "000000000000000000000031";
+			"productType" = "com.apple.product-type.app-extension";
+			"productName" = "FinderMenuExtension";
+			"isa" = "PBXNativeTarget";
+			"buildPhases" = ("000000000000000000000015");
+			"dependencies" = ();
+			"name" = "FinderMenuExtension";
+			"buildRules" = ();
+		};
+		"00000000000000000000003F" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"INFOPLIST_FILE" = "App/Info.plist";
+                "ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"CODE_SIGN_ENTITLEMENTS" = "App/FinderMenu.entitlements";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks");
+				"EXECUTABLE_NAME" = "FinderMenu";
+				"PRODUCT_NAME" = "Finder Menu";
+			};
+		};
+		"000000000000000000000101" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/Stores/MenuStore.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000102" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000101";
+		};
+		"000000000000000000000103" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/Services/ApplicationPicker.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000104" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000103";
+		};
+		"000000000000000000000105" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/Views/MenuRow.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000106" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000105";
+		};
+		"000000000000000000000107" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ("00000000000000000000010B", "00000000000000000000010D");
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"000000000000000000000108" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Shared/MenuConfiguration.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000109" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000108";
+		};
+		"00000000000000000000010A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000108";
+		};
+		"00000000000000000000010B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000108";
+		};
+		"00000000000000000000010C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Opener/main.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"00000000000000000000010D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "00000000000000000000010C";
+		};
+		"00000000000000000000010E" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"path" = "FinderMenuOpener.app";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"00000000000000000000010F" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "FinderMenuOpener";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu.Opener";
+				"INFOPLIST_FILE" = "Opener/Info.plist";
+				"SKIP_INSTALL" = "YES";
+				"ENABLE_APP_SANDBOX" = "NO";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks");
+			};
+		};
+		"000000000000000000000110" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "FinderMenuOpener";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "dev.jojo.FinderMenu.Opener";
+				"INFOPLIST_FILE" = "Opener/Info.plist";
+				"SKIP_INSTALL" = "YES";
+				"ENABLE_APP_SANDBOX" = "NO";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/../Frameworks");
+			};
+		};
+		"000000000000000000000111" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("00000000000000000000010F", "000000000000000000000110");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Debug";
+		};
+		"000000000000000000000112" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "000000000000000000000111";
+			"buildPhases" = ("000000000000000000000107");
+			"buildRules" = ();
+			"dependencies" = ();
+			"name" = "FinderMenuOpener";
+			"productName" = "FinderMenuOpener";
+			"productReference" = "00000000000000000000010E";
+			"productType" = "com.apple.product-type.application";
+		};
+		"000000000000000000000113" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "000000000000000000000001";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "000000000000000000000112";
+			"remoteInfo" = "FinderMenuOpener";
+		};
+		"000000000000000000000114" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "000000000000000000000112";
+			"targetProxy" = "000000000000000000000113";
+		};
+		"000000000000000000000115" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "00000000000000000000010E";
+			"settings" = {
+				"ATTRIBUTES" = ("CodeSignOnCopy", "RemoveHeadersOnCopy");
+			};
+		};
+		"000000000000000000000116" = {
+			"isa" = "PBXCopyFilesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"dstPath" = "Contents/Helpers";
+			"dstSubfolderSpec" = 1;
+			"files" = ("000000000000000000000115");
+			"name" = "Embed Opener";
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+	};
+	"rootObject" = "000000000000000000000001";
+}
