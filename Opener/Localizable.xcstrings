@@ -1,0 +1,36 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "找不到这个应用，请在 Finder Menu 中重新添加。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't find this app. Add it again in Finder Menu."
+          }
+        }
+      }
+    },
+    "无法使用所选应用打开": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't Open with the Selected App"
+          }
+        }
+      }
+    },
+    "这个菜单项已被禁用、移除，或不适用于所选项目。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This menu item was disabled, removed, or doesn't apply to the selection."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

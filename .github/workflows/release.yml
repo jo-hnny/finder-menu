@@ -25,7 +25,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set bundle versions
+      - name: Resolve version
         id: version
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -40,18 +40,17 @@ jobs:
             fi
             VERSION="${RELEASE_TAG#v}"
           else
-            VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' App/Info.plist)"
+            VERSION="$(awk -F' = ' '$1 == "MARKETING_VERSION" { print $2 }' Config/Base.xcconfig)"
           fi
-          for PLIST in App/Info.plist Extension/Info.plist Opener/Info.plist; do
-            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "$PLIST"
-          done
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Test configuration
+      - name: Test core
         run: ./script/test.sh
 
       - name: Build and verify Apple Silicon DMG
+        env:
+          MARKETING_VERSION: ${{ steps.version.outputs.version }}
+          CURRENT_PROJECT_VERSION: ${{ github.run_number }}
         run: ./script/package_dmg.sh
 
       - name: Upload verified package

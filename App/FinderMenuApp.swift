@@ -6,7 +6,7 @@ struct FinderMenuApp: App {
         Window("Finder Menu", id: "main") {
             ContentView()
         }
-        .defaultSize(width: 960, height: 640)
+        .defaultSize(width: 1080, height: 640)
         .windowResizability(.contentMinSize)
     }
 }

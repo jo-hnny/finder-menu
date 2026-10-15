@@ -1,0 +1,46 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "Finder Menu：配置读取失败": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder Menu: Can't read configuration"
+          }
+        }
+      }
+    },
+    "找不到这个应用，请在 Finder Menu 中重新添加。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't find this app. Add it again in Finder Menu."
+          }
+        }
+      }
+    },
+    "无法写入剪贴板，请重试。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't write to the clipboard. Try again."
+          }
+        }
+      }
+    },
+    "请先打开一次 Finder Menu 以完成更新。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Finder Menu once to finish updating."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
