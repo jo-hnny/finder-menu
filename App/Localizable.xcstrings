@@ -31,22 +31,22 @@
         }
       }
     },
-    "Finder 扩展尚未启用": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Finder extension is off"
-          }
-        }
-      }
-    },
     "Finder 扩展已启用": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Finder extension is on"
+          }
+        }
+      }
+    },
+    "Finder 扩展运行中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder extension is running"
           }
         }
       }
@@ -241,12 +241,22 @@
         }
       }
     },
-    "已保存 · 退出应用后仍然生效": {
+    "已在系统设置中启用 Finder 扩展。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saved · Keeps working after you quit"
+            "value": "The Finder extension is enabled in System Settings."
+          }
+        }
+      }
+    },
+    "已检测到正在运行的 Finder 扩展，可能来自另一个已安装的应用副本。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A running Finder extension was detected. It may belong to another installed copy of the app."
           }
         }
       }
@@ -297,6 +307,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open"
+          }
+        }
+      }
+    },
+    "扩展状态待确认": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extension status unconfirmed"
+          }
+        }
+      }
+    },
+    "扩展设置…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extension Settings…"
           }
         }
       }
@@ -401,6 +431,16 @@
         }
       }
     },
+    "暂时无法确认扩展状态，可在系统设置中检查。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The extension status cannot currently be confirmed. Check it in System Settings."
+          }
+        }
+      }
+    },
     "此处没有已启用的菜单项": {
       "localizations": {
         "en": {
@@ -441,16 +481,6 @@
         }
       }
     },
-    "管理…": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manage…"
-          }
-        }
-      }
-    },
     "编辑 %@": {
       "localizations": {
         "en": {
@@ -471,12 +501,32 @@
         }
       }
     },
+    "自动保存": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autosave"
+          }
+        }
+      }
+    },
     "菜单名称": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Menu Title"
+          }
+        }
+      }
+    },
+    "菜单名称在回车或离开编辑时保存，其他更改即时保存。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu titles save on Return or when leaving the editor. Other changes save immediately."
           }
         }
       }
@@ -507,6 +557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit"
+          }
+        }
+      }
+    },
+    "退出配置应用后，Finder 菜单仍然可用。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Finder menu remains available after quitting this app."
           }
         }
       }
