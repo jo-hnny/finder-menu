@@ -21,7 +21,7 @@ struct ContentView: View {
     private var workspace: some View {
         VStack(spacing: 0) {
             GeometryReader { geometry in
-                let columns = InspectorWindowLayout.columns(contentWidth: geometry.size.width, reveal: 0)
+                let columns = InspectorWindowLayout.columns(contentWidth: geometry.size.width)
                 HStack(spacing: 0) {
                     MenuEditor(store: store)
                         .frame(width: columns.sidebar)
@@ -29,8 +29,8 @@ struct ContentView: View {
                         .modifier(GlassSurface(cornerRadius: 24))
                         .padding(.trailing, 16)
                     InspectorPreview(store: store, state: inspectorWindow,
-                                     target: $previewTarget, availableWidth: columns.preview)
-                        .frame(width: columns.preview)
+                                     target: $previewTarget, availableWidth: columns.detail)
+                        .frame(width: columns.detail)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(minHeight: geometry.size.height)

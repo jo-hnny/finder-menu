@@ -109,24 +109,39 @@ import Testing
     func sidebarStaysExpandedAtEveryAnimationFrame(width: CGFloat) {
         for reveal in stride(from: CGFloat(0), through: 296, by: 8) {
             let windowWidth = max(width, InspectorWindowLayout.minimumWidth(reveal: reveal))
-            let columns = InspectorWindowLayout.columns(contentWidth: windowWidth - 32, reveal: reveal)
+            let columns = InspectorWindowLayout.columns(contentWidth: windowWidth - 32)
             #expect(columns.sidebar == 350)
-            #expect(columns.preview >= 340)
-            #expect(abs(columns.sidebar + 16 + reveal + columns.preview + 32 - windowWidth) < 0.01)
+            #expect(max(0, columns.detail - reveal) >= 340)
+            #expect(abs(columns.sidebar + 16 + reveal + max(0, columns.detail - reveal) + 32 - windowWidth) < 0.01)
         }
         #expect(InspectorWindowLayout.minimumWidth(reveal: 0) == 780)
         #expect(InspectorWindowLayout.minimumWidth(reveal: 296) == 1034)
     }
 
-    @Test func tiledAndFullScreenWindowsKeepTheirBounds() {
+    @Test(arguments: [false, true])
+    func tiledWindowRestoresMinimumGrowthAndFullScreenKeepsItsBounds(rightSide: Bool) {
         let screen = CGRect(x: 0, y: 0, width: 1920, height: 1080)
-        let tile = CGRect(x: 16, y: 16, width: 936, height: 1048)
+        let tile = CGRect(x: rightSide ? 968 : 16, y: 16, width: 936, height: 1048)
         #expect(InspectorWindowLayout.isTiled(tile, in: screen))
         var model = InspectorWindowLayout()
         model.begin(reveal: 0, frame: tile, visible: screen, constrained: false, liveResize: false)
-        #expect(step(&model, 296, tile, visible: screen) == tile)
+        let open = step(&model, 296, tile, visible: screen)
+        #expect(open.width == 1034)
+        model.finish(closed: false)
+        model.begin(reveal: 296, frame: open, visible: screen, constrained: false, liveResize: false)
+        #expect(step(&model, 0, open, visible: screen) == tile)
+        model.finish(closed: true)
         model.begin(reveal: 0, frame: screen, visible: screen, constrained: true, liveResize: false)
         #expect(step(&model, 296, screen, visible: screen, constrained: true) == screen)
+    }
+
+    @Test func wideManagedWindowDoesNotExpand() {
+        var model = InspectorWindowLayout()
+        model.begin(reveal: 0, frame: initial, visible: visible, constrained: true, liveResize: false)
+        let open = step(&model, 296, initial)
+        #expect(open == initial)
+        model.begin(reveal: 296, frame: open, visible: visible, constrained: true, liveResize: false)
+        #expect(step(&model, 0, open) == initial)
     }
 
     @Test func springReversesContinuouslyAndSettles() {
@@ -235,12 +250,12 @@ import Testing
         model.begin(reveal: 0, frame: initial, visible: visible, constrained: false, liveResize: false)
         spring.retarget(296)
         var frame = initial
-        let initialPreview = InspectorWindowLayout.columns(contentWidth: initial.width - 32, reveal: 0).preview
+        let initialPreview = InspectorWindowLayout.columns(contentWidth: initial.width - 32).detail
         for _ in 0..<240 where !spring.settled {
             spring.advance(by: 1 / rate)
             let reveal = spring.displayedValue
             frame = step(&model, reveal, frame)
-            let preview = InspectorWindowLayout.columns(contentWidth: frame.width - 32, reveal: reveal).preview
+            let preview = max(0, InspectorWindowLayout.columns(contentWidth: frame.width - 32).detail - reveal)
             #expect(preview == initialPreview)
         }
         #expect(spring.settled)

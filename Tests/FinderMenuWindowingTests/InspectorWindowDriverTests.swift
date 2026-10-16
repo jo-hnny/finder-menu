@@ -9,6 +9,8 @@ import Testing
     final class RecordingWindow: NSWindow {
         var frameRequests: [(width: CGFloat, minimum: CGFloat)] = []
         var recordsFrames = false
+        var reportsZoomed: Bool?
+        override var isZoomed: Bool { reportsZoomed ?? super.isZoomed }
 
         override func setFrame(_ frameRect: NSRect, display flag: Bool) {
             if recordsFrames { frameRequests.append((frameRect.width, contentMinSize.width)) }
@@ -18,7 +20,7 @@ import Testing
 
     @MainActor final class ChangeCount { var value = 0 }
 
-    func makeDriver(width: CGFloat = 1120) -> (RecordingWindow, InspectorWindowState) {
+    func makeDriver(width: CGFloat = 1120, managed: Bool = false) -> (RecordingWindow, InspectorWindowState) {
         NSApplication.shared.setActivationPolicy(.accessory)
         let visible = NSScreen.main!.visibleFrame
         let size = CGSize(width: min(width, visible.width - 200), height: min(720, visible.height - 200))
@@ -26,6 +28,7 @@ import Testing
         let window = RecordingWindow(contentRect: frame,
                               styleMask: [.titled, .resizable], backing: .buffered, defer: false)
         window.setFrame(frame, display: false)
+        window.reportsZoomed = managed ? true : nil
         let driver = InspectorWindowState()
         driver.attach(to: window)
         return (window, driver)
@@ -282,5 +285,65 @@ import Testing
             }
         }
         #expect(view.fittingSize.width == 780 && !driver.isDisplayLinkActive)
+    }
+
+    @Test(arguments: [60.0, 120.0], [CGFloat(824), 960])
+    func narrowManagedWindowRestoresItsBounds(rate: Double, width: CGFloat) {
+        let (window, driver) = makeDriver(width: width, managed: true)
+        defer { driver.attach(to: nil); _ = window }
+        let original = window.frame
+        let view = NSHostingView(rootView: Color.clear.modifier(InspectorWindowMinimum(state: driver)))
+        window.contentView = view
+        let item = MenuItem(title: "Test", action: .copyPaths)
+        for selected in [item, nil] {
+            driver.select(selected, reduceMotion: false)
+            for _ in 0..<240 where driver.isResizing {
+                driver.advance(by: 1 / rate)
+                view.layoutSubtreeIfNeeded()
+                #expect(window.frame.width >= window.contentMinSize.width)
+                #expect(view.fittingSize.width == window.contentMinSize.width)
+            }
+            #expect(window.frame.width == (selected == nil ? original.width : 1034))
+        }
+        #expect(window.frame == original && window.contentMinSize.width == 780)
+        #expect(!driver.isDisplayLinkActive)
+        driver.select(item, reduceMotion: true)
+        driver.select(nil, reduceMotion: true)
+        #expect(window.frame == original && !driver.isDisplayLinkActive)
+    }
+
+    @Test(arguments: [false, true])
+    func manualResizeOverridesManagedRestoration(duringOpening: Bool) {
+        let (window, driver) = makeDriver(width: 824, managed: true)
+        defer { driver.attach(to: nil); _ = window }
+        driver.select(MenuItem(title: "Test", action: .copyPaths), reduceMotion: !duringOpening)
+        if duringOpening { for _ in 0..<4 { driver.advance(by: 1 / 60) } }
+        var manual = window.frame
+        manual.size.width = 1100
+        window.setFrame(manual, display: false)
+        settle(driver)
+        driver.select(nil, reduceMotion: false)
+        settle(driver)
+        #expect(window.frame == manual && window.contentMinSize.width == 780)
+    }
+
+    @Test func managedRestorationSurvivesMovingAndRapidReversals() {
+        let (window, driver) = makeDriver(width: 960, managed: true)
+        defer { driver.attach(to: nil); _ = window }
+        let originalWidth = window.frame.width
+        let item = MenuItem(title: "Test", action: .copyPaths)
+        driver.select(item, reduceMotion: false)
+        for _ in 0..<4 { driver.advance(by: 1 / 60) }
+        var manual = window.frame
+        manual.origin.y += 40
+        window.setFrame(manual, display: false)
+        settle(driver)
+        for selected in [nil, item, nil, item, nil] {
+            driver.select(selected, reduceMotion: false)
+            for _ in 0..<3 { driver.advance(by: 1 / 60) }
+        }
+        settle(driver)
+        #expect(window.frame.width == originalWidth && window.frame.origin == manual.origin)
+        #expect(!driver.isDisplayLinkActive && driver.displayedItem == nil)
     }
 }

@@ -7,16 +7,16 @@ struct InspectorWindowLayout {
 
     struct Columns {
         let sidebar: CGFloat
-        let preview: CGFloat
+        let detail: CGFloat
     }
 
     static func minimumWidth(reveal: CGFloat) -> CGFloat {
         max(780, 350 + 16 + reveal + 340 + 32)
     }
 
-    static func columns(contentWidth: CGFloat, reveal: CGFloat) -> Columns {
+    static func columns(contentWidth: CGFloat) -> Columns {
         let sidebar: CGFloat = 350
-        return Columns(sidebar: sidebar, preview: max(0, contentWidth - sidebar - 16 - reveal))
+        return Columns(sidebar: sidebar, detail: max(0, contentWidth - sidebar - 16))
     }
 
     // There is no public AppKit tiled-state flag. Respect standard tile bounds, including tile margins.
@@ -41,6 +41,7 @@ struct InspectorWindowLayout {
     private struct Transition {
         var closed: CGRect
         var open: CGRect
+        let minimumOnly: Bool
     }
 
     private var transition: Transition?
@@ -78,14 +79,17 @@ struct InspectorWindowLayout {
         if transition == nil {
             // Capture once: our own expansion can also make AppKit report a zoomed window.
             managedWindow = constrained || Self.isTiled(frame, in: visible)
+            let minimumOnly = managedWindow && frame.width < Self.minimumWidth(reveal: Self.revealWidth)
             var open = frame
-            if !managedWindow {
-                open.size.width = min(frame.width + Self.revealWidth, visible.width)
+            if !managedWindow || minimumOnly {
+                open.size.width = minimumOnly ? Self.minimumWidth(reveal: Self.revealWidth)
+                    : min(frame.width + Self.revealWidth, visible.width)
                 open.origin.x = min(max(frame.minX, visible.minX), visible.maxX - open.width)
             }
-            transition = Transition(closed: frame, open: open)
+            transition = Transition(closed: frame, open: open, minimumOnly: minimumOnly)
             canvasWidth = max(canvasWidth, frame.width, open.width)
-        } else if !automaticFrame, !manuallySized, !managedWindow, reveal > 0, var transition {
+        } else if !automaticFrame, !manuallySized, reveal > 0, var transition,
+                  !managedWindow || transition.minimumOnly {
             // A manual interruption may leave the window behind the panel's progress.
             // Rebase once on resumption, then keep this mapping through later reversals.
             let progress = reveal / Self.revealWidth
@@ -93,7 +97,8 @@ struct InspectorWindowLayout {
             transition.open.origin.x = transition.closed.minX + (frame.minX - transition.closed.minX) / progress
             self.transition = transition
         }
-        automaticFrame = !managedWindow && !liveResize && !manuallySized
+        // A narrow managed window only borrows enough width for the three-column minimum.
+        automaticFrame = (!managedWindow || transition?.minimumOnly == true) && !liveResize && !manuallySized
     }
 
     mutating func frame(at reveal: CGFloat, current: CGRect, visible: CGRect, liveResize: Bool,

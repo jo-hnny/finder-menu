@@ -1,7 +1,7 @@
 import FinderMenuCore
 import SwiftUI
 
-/// A scroll viewport keeps the sliding glass panel and its controls inside their column.
+/// Reveal the fixed-width controls from the trailing edge, with glass outside the content clip.
 struct InspectorReveal: View {
     let item: MenuItem
     let store: MenuStore
@@ -9,17 +9,12 @@ struct InspectorReveal: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView(.horizontal) {
-                panel
-                    .frame(width: 280, height: geometry.size.height)
-            }
-            .defaultScrollAnchor(.trailing)
-            .scrollIndicators(.never)
-            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
-            .frame(width: max(0, width - 16), height: geometry.size.height)
-            .modifier(GlassSurface(cornerRadius: 24))
-            .padding(.trailing, 16)
-            .opacity(width / 296)
+            panel
+                .frame(width: 280, height: geometry.size.height)
+                .frame(width: max(0, width - 16), height: geometry.size.height, alignment: .trailing)
+                .clipShape(RoundedRectangle(cornerRadius: 24))
+                .modifier(GlassSurface(cornerRadius: 24))
+                .padding(.trailing, 16)
         }
         .frame(width: width)
     }
