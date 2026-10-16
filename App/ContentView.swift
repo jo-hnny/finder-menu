@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var store = MenuStore()
     @State private var catalog = ApplicationCatalog()
     @State private var previewTarget: SelectionKind = .folders
+    @State private var inspectorWindow = InspectorWindowState()
 
     var body: some View {
         if #available(macOS 26.0, *) {
@@ -20,30 +21,19 @@ struct ContentView: View {
     private var workspace: some View {
         VStack(spacing: 0) {
             GeometryReader { geometry in
-                let detailWidth = geometry.size.width - 350 - 16
-                let showsPreview = store.selectedItem == nil || detailWidth >= 280 + 16 + 340
+                let columns = InspectorWindowLayout.columns(contentWidth: geometry.size.width)
                 HStack(spacing: 0) {
-                    editor
-                        .frame(width: 350)
+                    MenuEditor(store: store)
+                        .frame(width: columns.sidebar)
                         .frame(maxHeight: .infinity)
                         .modifier(GlassSurface(cornerRadius: 24))
                         .padding(.trailing, 16)
-                    if let item = store.selectedItem {
-                        ItemInspector(item: item, store: store, isCompact: !showsPreview)
-                            .id(item.id)
-                            .frame(width: showsPreview ? 280 : detailWidth)
-                            .frame(maxHeight: .infinity)
-                            .modifier(GlassSurface(cornerRadius: 24))
-                            .padding(.trailing, showsPreview ? 16 : 0)
-                            .transition(.opacity)
-                    }
-                    if showsPreview {
-                        MenuPreview(configuration: store.configuration, highlightedID: store.selectedID,
-                                    dismissEditor: { store.selectedID = nil }, target: $previewTarget)
-                            .frame(width: detailWidth - (store.selectedItem == nil ? 0 : 296))
-                            .frame(maxHeight: .infinity)
-                    }
+                    InspectorPreview(store: store, state: inspectorWindow,
+                                     target: $previewTarget, availableWidth: columns.detail)
+                        .frame(width: columns.detail)
+                        .frame(maxHeight: .infinity)
                 }
+                .frame(minHeight: geometry.size.height)
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
             .padding(.horizontal, 16)
@@ -51,14 +41,21 @@ struct ContentView: View {
             .padding(.bottom, 8)
             StatusBar(store: store)
         }
-        .background { WorkspaceBackdrop() }
+        .background { WindowBackdrop(state: inspectorWindow) }
+        .background {
+            InspectorWindowResize(state: inspectorWindow)
+        }
         .tint(Color("AccentColor"))
-        .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: store.selectedID != nil)
         .environment(catalog)
         .focusedSceneValue(\.menuStore, store)
-        .frame(minWidth: 780, minHeight: 620)
-        .onChange(of: store.selectedID) { _, _ in revealSelectedItem() }
-        .onChange(of: store.selectedItem?.scope) { _, _ in revealSelectedItem() }
+        .modifier(InspectorWindowMinimum(state: inspectorWindow))
+        .onChange(of: store.selectedItem) { _, item in
+            revealSelectedItem()
+            inspectorWindow.select(item, reduceMotion: reduceMotion)
+        }
+        .onChange(of: reduceMotion) { _, reduced in
+            if reduced { inspectorWindow.finish() }
+        }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             catalog.invalidate()
@@ -72,67 +69,12 @@ struct ContentView: View {
         case .all, nil: break
         }
     }
+}
 
-    private var editor: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 12) {
-                Image(nsImage: NSApp.applicationIconImage)
-                    .resizable().scaledToFit().frame(width: 40, height: 40)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("右键菜单")
-                        .font(.system(size: 23, weight: .semibold))
-                        .tracking(-0.5)
-                        .lineLimit(2)
-                    Text("\(store.items.filter(\.isEnabled).count) 项已启用")
-                        .font(.caption)
-                        .monospacedDigit()
-                        .foregroundStyle(Color.primary.opacity(0.78))
-                }
-            }
-            .padding(24)
+private struct WindowBackdrop: View {
+    let state: InspectorWindowState
 
-            HStack {
-                Text("菜单项目")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(Color.primary.opacity(0.78))
-                Spacer()
-                Button {
-                    Task { store.addApplications(at: await ApplicationPicker.choose()) }
-                } label: {
-                    Label("添加应用", systemImage: "plus")
-                        .font(.system(size: 13, weight: .medium))
-                }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-                .tint(.primary)
-                .foregroundStyle(.primary)
-                .controlSize(.regular)
-                .keyboardShortcut("o", modifiers: [.command, .shift])
-                .disabled(!store.isLoaded)
-            }
-            .padding(.horizontal, 24).padding(.bottom, 12)
-
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 0) {
-                        LazyVStack(spacing: 6) {
-                            ForEach(store.items) { item in
-                                MenuRow(item: item, store: store)
-                            }
-                        }
-                        .padding(.horizontal, 12).padding(.vertical, 4)
-                        Color.clear.contentShape(Rectangle())
-                            .onTapGesture { store.selectedID = nil }
-                    }
-                    .frame(minHeight: geometry.size.height, alignment: .top)
-                }
-            }
-            .disabled(!store.isLoaded)
-
-            Label("拖动左侧手柄排序 · 选中项目编辑", systemImage: "arrow.up.arrow.down")
-                .font(.caption).foregroundStyle(.secondary)
-                .padding(24)
-        }
+    var body: some View {
+        WorkspaceBackdrop(canvasWidth: state.canvasWidth)
     }
 }

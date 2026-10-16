@@ -26,7 +26,7 @@ jobs:
       - name: Verify Xcode and macOS SDK
         run: ./script/verify_toolchain.sh
 
-      - name: Test core
+      - name: Test core and window interactions
         run: ./script/test.sh
 
       - name: Build app

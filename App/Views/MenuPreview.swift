@@ -29,27 +29,43 @@ struct MenuPreview: View {
             GeometryReader { geometry in
                 ScrollView {
                     VStack(spacing: 0) {
-                        Spacer(minLength: 20)
+                        Spacer(minLength: 0)
                         previewContent
-                        Color.clear.contentShape(Rectangle())
-                            .frame(minHeight: 40)
-                            .onTapGesture(perform: dismissEditor)
+                        Color.clear
+                            .frame(minHeight: 0, idealHeight: 0, maxHeight: .infinity)
                     }
                     .frame(minHeight: geometry.size.height, alignment: .center)
                     .frame(maxWidth: .infinity)
+                    .background {
+                        Color.clear.contentShape(Rectangle())
+                            .onTapGesture(perform: dismissEditor)
+                    }
                 }
+                .frame(height: geometry.size.height)
+                .clipped()
             }
 
             Label("预览本应用菜单的内容与顺序；灰色系统项仅为示意", systemImage: "info.circle")
                 .font(.caption).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(24)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
         }
         .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: target)
     }
 
+    @ViewBuilder
     private var previewContent: some View {
-        VStack(spacing: 24) {
+        if #available(macOS 26.0, *) {
+            // Keep glass rendering inside the preview's scroll viewport.
+            GlassEffectContainer { previewGroup }
+        } else {
+            previewGroup
+        }
+    }
+
+    private var previewGroup: some View {
+        VStack(spacing: 16) {
             VStack(spacing: 10) {
                 Image(systemName: target == .folders ? "folder.fill" : "doc.text.fill")
                     .font(.system(size: 64, weight: .light))
@@ -67,8 +83,11 @@ struct MenuPreview: View {
             menu
         }
         .frame(maxWidth: 320)
+        .contentShape(Rectangle())
+        // Only the surrounding blank space dismisses the editor.
+        .onTapGesture { }
         .padding(.horizontal, 28)
-        .padding(.bottom, 24)
+        .padding(.bottom, 48)
         .frame(maxWidth: .infinity)
     }
 
