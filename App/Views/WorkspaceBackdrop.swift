@@ -1,15 +1,14 @@
-import AppKit
 import SwiftUI
 
 struct WorkspaceBackdrop: View {
-    var screenWidth: CGFloat?
+    var canvasWidth: CGFloat = 0
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     var body: some View {
         GeometryReader { geometry in
             // Keep blur textures the same size while the window reveals the inspector.
-            let canvasWidth = max(geometry.size.width, screenWidth ?? NSScreen.main?.frame.width ?? geometry.size.width)
+            let canvasWidth = max(geometry.size.width, canvasWidth > 0 ? canvasWidth : geometry.size.width + 296)
             ZStack {
                 Color("CanvasSurface")
                 if !reduceTransparency {

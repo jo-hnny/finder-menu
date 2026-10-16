@@ -15,6 +15,7 @@ struct InspectorReveal: View {
             }
             .defaultScrollAnchor(.trailing)
             .scrollIndicators(.never)
+            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             .frame(width: max(0, width - 16), height: geometry.size.height)
             .modifier(GlassSurface(cornerRadius: 24))
             .padding(.trailing, 16)

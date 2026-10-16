@@ -22,14 +22,15 @@ struct ContentView: View {
         VStack(spacing: 0) {
             GeometryReader { geometry in
                 let inspectorWidth = inspectorWindow.revealedWidth
+                let columns = InspectorWindowLayout.columns(contentWidth: geometry.size.width, reveal: inspectorWidth)
                 HStack(spacing: 0) {
                     editor
-                        .frame(width: 350)
+                        .frame(width: columns.sidebar)
                         .frame(maxHeight: .infinity)
                         .modifier(GlassSurface(cornerRadius: 24))
                         .padding(.trailing, 16)
                     Group {
-                        if let item = inspectorWindow.displayedID.flatMap(store.configuration.item(id:)) {
+                        if let item = inspectorWindow.displayedItem {
                             InspectorReveal(item: item, store: store, width: inspectorWidth)
                         } else {
                             Color.clear
@@ -41,11 +42,10 @@ struct ContentView: View {
                     .accessibilityHidden(inspectorWidth < 296 || store.selectedID == nil)
                     MenuPreview(configuration: store.configuration, highlightedID: store.selectedID,
                                 dismissEditor: { store.selectedID = nil }, target: $previewTarget)
-                        .frame(width: max(340, geometry.size.width - 366 - inspectorWidth))
+                        .frame(width: columns.preview)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(minHeight: geometry.size.height)
-                .transaction { $0.animation = nil }
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
             .padding(.horizontal, 16)
@@ -53,19 +53,21 @@ struct ContentView: View {
             .padding(.bottom, 8)
             StatusBar(store: store)
         }
-        .background { WorkspaceBackdrop(screenWidth: inspectorWindow.window?.screen?.frame.width) }
+        .background { WorkspaceBackdrop(canvasWidth: inspectorWindow.canvasWidth) }
         .background {
             InspectorWindowResize(state: inspectorWindow)
         }
         .tint(Color("AccentColor"))
         .environment(catalog)
         .focusedSceneValue(\.menuStore, store)
-        .frame(minWidth: max(780, 350 + 16 + inspectorWindow.revealedWidth + 340 + 32), minHeight: 620)
-        .onChange(of: store.selectedID) { _, id in
+        .frame(minWidth: InspectorWindowLayout.minimumWidth(reveal: inspectorWindow.revealedWidth), minHeight: 620)
+        .onChange(of: store.selectedItem) { _, item in
             revealSelectedItem()
-            inspectorWindow.select(id, reduceMotion: reduceMotion)
+            inspectorWindow.select(item, reduceMotion: reduceMotion)
         }
-        .onChange(of: store.selectedItem?.scope) { _, _ in revealSelectedItem() }
+        .onChange(of: reduceMotion) { _, reduced in
+            if reduced { inspectorWindow.finish() }
+        }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             catalog.invalidate()

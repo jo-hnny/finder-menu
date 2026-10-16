@@ -26,7 +26,7 @@
 ./script/build_and_run.sh --telemetry  # 无其他副本时，启动并观察操作日志
 ./script/build_and_run.sh --debug      # 无其他副本时，用 LLDB 启动主应用
 ./script/build_and_run.sh run --allow-extension-reload # 显式允许开发副本影响现有扩展
-./script/test.sh                      # FinderMenuCore 单元测试（swift test）
+./script/test.sh                      # Core 与窗口动画回归测试（swift test）
 ```
 
 默认使用本地 ad-hoc 签名，不需要开发者团队；这不是可分发或已公证的发布包。受限自动化沙箱可能阻止 Swift 宏编译、Launch Services 或 PlugInKit，构建需要允许访问这些本机服务。
@@ -147,6 +147,12 @@ Config/     所有 target 共享的构建设置与版本号
 扩展将 `/` 注册为菜单作用范围，不扫描磁盘、不添加文件徽章，此设置不授予全盘访问权限。Finder 可保留或按需启动 `FinderMenuExtension`，不承诺系统后台完全没有进程。动作使用菜单生成时保存的 URL 快照和 `NSMenuItem.tag`；Finder 不保留 `representedObject`。
 
 ## 验证
+
+配置窗口的展开收起使用系统 `Spring` 和 macOS 14 的 `NSWindow.displayLink(target:selector:)`，没有第三方动画依赖。帧回调只在动画期间创建，结束、关闭窗口或移除窗口附件时销毁。窗口与编辑栏共享同一进度；手动拖动或缩放立即接管窗口，用户调整过宽度后，关闭编辑保留该宽度。正常展开为避让屏幕右边缘而左移的窗口，在未被用户移动时恢复原位置。
+
+左侧菜单列表固定为 350pt，始终显示名称、开关与排序手柄。窗口最小宽度随编辑栏滑动从 780pt 增至 1034pt，关闭后恢复为 780pt，保持三列互不遮挡；小于 1034pt 的显示区域无法完整容纳三列。全屏、最大化和标准平铺范围内不主动扩大窗口。背景画布按窗口的展开基准固定，不依赖显示器宽度。删除当前项时保留关闭前的快照，直到滑出完成。
+
+`script/test.sh` 同时运行 Core 和根目录的窗口测试包。后者直接编译产品的窗口控制源码，覆盖尺寸恢复、手动接管、反向、小屏和平铺、弹簧连续性、删除快照，以及帧回调的启动和销毁；只创建不显示的测试窗口，不启动配置应用或注册 Finder 扩展。`Tests/FinderMenuWindowingTests` 随 CI 运行。
 
 自动检查（`./script/test.sh`）覆盖：版本 1 配置迁移、编解码保留顺序与状态、拒绝更新版本 / 损坏 / 重复 ID / 空名称、与 SwiftUI `onMove` 一致的移动语义、内置项不可删除、添加应用去重、文件 / 文件夹 / 混合 / package / 符号链接分类，以及签名请求的伪造、篡改、过期、未签名旧格式和非法路径拒绝。菜单图标测试验证编码体积上限、Retina 尺寸、颜色和透明度。
 

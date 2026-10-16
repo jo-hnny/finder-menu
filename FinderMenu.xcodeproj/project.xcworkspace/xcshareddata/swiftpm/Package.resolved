@@ -1,15 +1,6 @@
 {
-  "originHash" : "be0c96f50b88681ec2b3a0b1aba89e945c72df227ed81941d395bc20238542ab",
+  "originHash" : "2924d0ab4d599b41a36cf74870bd211e8bd8ad43d4a6d9ae1148e1dc6a39d2ff",
   "pins" : [
-    {
-      "identity" : "displaylink",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/DisplayLink.git",
-      "state" : {
-        "revision" : "41bea2661e04bebcb1c4f15fc0b6197850100fdd",
-        "version" : "3.0.1"
-      }
-    },
     {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",
@@ -17,24 +8,6 @@
       "state" : {
         "revision" : "eef1a539a373c1f1a320624b1130fc5de7b2e100",
         "version" : "2.10.0"
-      }
-    },
-    {
-      "identity" : "springinterpolation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/SpringInterpolation.git",
-      "state" : {
-        "revision" : "cdb556516daa9b43c16aae9436dd39e19ff930fd",
-        "version" : "1.4.0"
-      }
-    },
-    {
-      "identity" : "windowanimation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/WindowAnimation",
-      "state" : {
-        "revision" : "12f1ff6a3fedf904de2e0d5eb2614deae58838b1",
-        "version" : "2.0.0"
       }
     }
   ],
