@@ -196,4 +196,36 @@ import Testing
         }
         #expect(spring.settled && frame == initial)
     }
+
+    // This checks restoration geometry with enough room for three columns; native event wiring
+    // is covered by the driver tests without assuming that the host display is this wide.
+    @Test(arguments: [60.0, 120.0])
+    func moveDuringOpeningDoesNotExpandAgainOnClose(rate: Double) {
+        var model = InspectorWindowLayout(), spring = InspectorSpring()
+        model.begin(reveal: 0, frame: initial, visible: visible, constrained: false, liveResize: false)
+        spring.retarget(296)
+        var frame = initial
+        for _ in 0..<4 {
+            spring.advance(by: 1 / rate)
+            frame = step(&model, spring.value, frame)
+        }
+        var moved = frame
+        moved.origin.y += 40
+        for _ in 0..<240 where !spring.settled {
+            spring.advance(by: 1 / rate)
+            frame = step(&model, spring.value, moved)
+        }
+        #expect(frame == moved && spring.value == 296)
+        model.finish(closed: false)
+        model.begin(reveal: spring.value, frame: frame, visible: visible, constrained: false, liveResize: false)
+        spring.retarget(0)
+        spring.advance(by: 1 / rate)
+        frame = step(&model, spring.value, frame)
+        #expect(frame.width <= moved.width && frame.origin == moved.origin)
+        for _ in 0..<240 where !spring.settled {
+            spring.advance(by: 1 / rate)
+            frame = step(&model, spring.value, frame)
+        }
+        #expect(spring.settled && frame.width == initial.width && frame.origin == moved.origin)
+    }
 }

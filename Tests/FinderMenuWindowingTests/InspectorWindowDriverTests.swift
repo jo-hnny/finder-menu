@@ -4,10 +4,14 @@ import Testing
 @testable import FinderMenuWindowing
 
 @Suite(.serialized) @MainActor struct InspectorWindowDriverTests {
-    func makeDriver() -> (NSWindow, InspectorWindowState) {
+    func makeDriver(width: CGFloat = 1120) -> (NSWindow, InspectorWindowState) {
         NSApplication.shared.setActivationPolicy(.accessory)
-        let window = NSWindow(contentRect: CGRect(x: 100, y: 100, width: 1120, height: 720),
+        let visible = NSScreen.main!.visibleFrame
+        let size = CGSize(width: min(width, visible.width - 200), height: min(720, visible.height - 200))
+        let frame = CGRect(x: visible.minX + 100, y: visible.minY + 100, width: size.width, height: size.height)
+        let window = NSWindow(contentRect: frame,
                               styleMask: [.titled, .resizable], backing: .buffered, defer: false)
+        window.setFrame(frame, display: false)
         let driver = InspectorWindowState()
         driver.attach(to: window)
         return (window, driver)
@@ -74,9 +78,9 @@ import Testing
         #expect(window.frame == manual && driver.displayedItem == nil)
     }
 
-    @Test(arguments: [false, true])
-    func reversalBeforeFirstFrameCleansUpImmediately(initiallyOpen: Bool) {
-        let (window, driver) = makeDriver()
+    @Test(arguments: [false, true], [CGFloat(824), 1120])
+    func reversalBeforeFirstFrameCleansUpImmediately(initiallyOpen: Bool, width: CGFloat) {
+        let (window, driver) = makeDriver(width: width)
         defer { driver.attach(to: nil); _ = window }
         let item = MenuItem(title: "Test", action: .copyPaths)
         if initiallyOpen { driver.select(item, reduceMotion: true) }
@@ -105,42 +109,28 @@ import Testing
         #expect(!window.isZoomed)
         driver.select(MenuItem(title: "Test", action: .copyPaths), reduceMotion: false)
         settle(driver)
-        #expect(window.frame.width == visible.width)
+        #expect(window.frame.width == max(visible.width, InspectorWindowLayout.minimumWidth(reveal: 296)))
         driver.select(nil, reduceMotion: false)
         settle(driver)
         #expect(window.frame == original && !driver.isDisplayLinkActive)
     }
 
-    @Test func verticalMovePreservesBothCoordinatesOnClose() {
-        let (window, driver) = makeDriver()
+    @Test(arguments: [CGFloat(824), 1120])
+    func verticalMovePreservesBothCoordinatesOnClose(width: CGFloat) {
+        let (window, driver) = makeDriver(width: width)
         defer { driver.attach(to: nil); _ = window }
         let visible = window.screen!.visibleFrame
-        window.setFrame(CGRect(x: visible.maxX - 1120, y: visible.minY + 100,
-                               width: 1120, height: 720), display: false)
+        let originalWidth = window.frame.width
+        var right = window.frame
+        right.origin.x = visible.maxX - originalWidth
+        window.setFrame(right, display: false)
         driver.select(MenuItem(title: "Test", action: .copyPaths), reduceMotion: true)
         var moved = window.frame
         moved.origin.y += 40
         window.setFrame(moved, display: false)
         driver.select(nil, reduceMotion: false)
         settle(driver)
-        #expect(window.frame.origin == moved.origin && window.frame.width == 1120)
-    }
-
-    @Test func moveDuringOpeningDoesNotExpandAgainOnClose() {
-        let (window, driver) = makeDriver()
-        defer { driver.attach(to: nil); _ = window }
-        driver.select(MenuItem(title: "Test", action: .copyPaths), reduceMotion: false)
-        for _ in 0..<4 { driver.advance(by: 1 / 60) }
-        var moved = window.frame
-        moved.origin.y += 40
-        window.setFrame(moved, display: false)
-        settle(driver)
-        #expect(window.frame == moved && driver.revealedWidth == 296)
-        driver.select(nil, reduceMotion: false)
-        driver.advance(by: 1 / 60)
-        #expect(window.frame.width <= moved.width && window.frame.origin == moved.origin)
-        settle(driver)
-        #expect(window.frame.width == 1120 && window.frame.origin == moved.origin)
+        #expect(window.frame.origin == moved.origin && window.frame.width == originalWidth)
     }
 
     @Test func manualZoomAfterExpansionKeepsItsBounds() {
@@ -148,9 +138,10 @@ import Testing
         defer { driver.attach(to: nil); _ = window }
         let visible = window.screen!.visibleFrame
         window.setFrame(CGRect(x: visible.minX + 20, y: visible.minY + 100,
-                               width: visible.width - 120, height: 720), display: false)
+                               width: visible.width - 120, height: window.frame.height), display: false)
         driver.select(MenuItem(title: "Test", action: .copyPaths), reduceMotion: true)
-        #expect(window.frame.width == visible.width && !window.isZoomed)
+        #expect(window.frame.width == max(visible.width, InspectorWindowLayout.minimumWidth(reveal: 296)))
+        #expect(!window.isZoomed)
         window.setFrame(visible, display: false)
         #expect(window.isZoomed)
         driver.select(nil, reduceMotion: false)
