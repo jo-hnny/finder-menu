@@ -15,7 +15,9 @@ struct MenuRow: View {
     var body: some View {
         HStack(spacing: 10) {
             dragHandle
-            Button { store.selectedID = item.id } label: {
+            Button {
+                store.selectedID = store.selectedID == item.id ? nil : item.id
+            } label: {
                 HStack(spacing: 10) {
                     ItemIcon(item: item, size: 32)
                     VStack(alignment: .leading, spacing: 3) {

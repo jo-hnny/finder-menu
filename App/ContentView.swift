@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var store = MenuStore()
     @State private var catalog = ApplicationCatalog()
     @State private var previewTarget: SelectionKind = .folders
+    @State private var inspectorWindow = InspectorWindowState()
 
     var body: some View {
         if #available(macOS 26.0, *) {
@@ -20,30 +21,31 @@ struct ContentView: View {
     private var workspace: some View {
         VStack(spacing: 0) {
             GeometryReader { geometry in
-                let detailWidth = geometry.size.width - 350 - 16
-                let showsPreview = store.selectedItem == nil || detailWidth >= 280 + 16 + 340
+                let inspectorWidth = inspectorWindow.revealedWidth
                 HStack(spacing: 0) {
                     editor
                         .frame(width: 350)
                         .frame(maxHeight: .infinity)
                         .modifier(GlassSurface(cornerRadius: 24))
                         .padding(.trailing, 16)
-                    if let item = store.selectedItem {
-                        ItemInspector(item: item, store: store, isCompact: !showsPreview)
-                            .id(item.id)
-                            .frame(width: showsPreview ? 280 : detailWidth)
-                            .frame(maxHeight: .infinity)
-                            .modifier(GlassSurface(cornerRadius: 24))
-                            .padding(.trailing, showsPreview ? 16 : 0)
-                            .transition(.opacity)
+                    Group {
+                        if let item = inspectorWindow.displayedID.flatMap(store.configuration.item(id:)) {
+                            InspectorReveal(item: item, store: store, width: inspectorWidth)
+                        } else {
+                            Color.clear
+                        }
                     }
-                    if showsPreview {
-                        MenuPreview(configuration: store.configuration, highlightedID: store.selectedID,
-                                    dismissEditor: { store.selectedID = nil }, target: $previewTarget)
-                            .frame(width: detailWidth - (store.selectedItem == nil ? 0 : 296))
-                            .frame(maxHeight: .infinity)
-                    }
+                    .frame(width: inspectorWidth)
+                    .frame(maxHeight: .infinity)
+                    .allowsHitTesting(store.selectedID != nil && inspectorWidth >= 296)
+                    .accessibilityHidden(inspectorWidth < 296 || store.selectedID == nil)
+                    MenuPreview(configuration: store.configuration, highlightedID: store.selectedID,
+                                dismissEditor: { store.selectedID = nil }, target: $previewTarget)
+                        .frame(width: max(340, geometry.size.width - 366 - inspectorWidth))
+                        .frame(maxHeight: .infinity)
                 }
+                .frame(minHeight: geometry.size.height)
+                .transaction { $0.animation = nil }
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
             .padding(.horizontal, 16)
@@ -51,13 +53,18 @@ struct ContentView: View {
             .padding(.bottom, 8)
             StatusBar(store: store)
         }
-        .background { WorkspaceBackdrop() }
+        .background { WorkspaceBackdrop(screenWidth: inspectorWindow.window?.screen?.frame.width) }
+        .background {
+            InspectorWindowResize(state: inspectorWindow)
+        }
         .tint(Color("AccentColor"))
-        .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: store.selectedID != nil)
         .environment(catalog)
         .focusedSceneValue(\.menuStore, store)
-        .frame(minWidth: 780, minHeight: 620)
-        .onChange(of: store.selectedID) { _, _ in revealSelectedItem() }
+        .frame(minWidth: max(780, 350 + 16 + inspectorWindow.revealedWidth + 340 + 32), minHeight: 620)
+        .onChange(of: store.selectedID) { _, id in
+            revealSelectedItem()
+            inspectorWindow.select(id, reduceMotion: reduceMotion)
+        }
         .onChange(of: store.selectedItem?.scope) { _, _ in revealSelectedItem() }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }

@@ -5,7 +5,6 @@ import SwiftUI
 struct ItemInspector: View {
     let item: MenuItem
     let store: MenuStore
-    var isCompact = false
     @Environment(ApplicationCatalog.self) private var catalog
     /// Titles save on Return, focus loss, selection change or quit, not on every keystroke.
     @State private var draftTitle = ""
@@ -48,7 +47,10 @@ struct ItemInspector: View {
                     }
                     .labelsHidden()
                     .pickerStyle(.segmented)
-                    .frame(maxWidth: .infinity)
+                    .controlSize(.regular)
+                    .font(.body)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Text(scopeDescription)
                         .font(.caption)
                         .foregroundStyle(Color.primary.opacity(0.78))
@@ -122,20 +124,14 @@ struct ItemInspector: View {
                     commitTitle()
                     store.selectedID = nil
                 } label: {
-                    if isCompact {
-                        Label("返回预览", systemImage: "chevron.backward")
-                            .font(.callout.weight(.medium))
-                            .foregroundStyle(.primary)
-                    } else {
-                        Image(systemName: "xmark").font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .frame(width: 24, height: 24)
-                            .background(.primary.opacity(0.07), in: Circle())
-                    }
+                    Image(systemName: "xmark").font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .frame(width: 24, height: 24)
+                        .background(.primary.opacity(0.07), in: Circle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(isCompact ? "返回预览" : "关闭编辑")
-                .help(isCompact ? "返回预览" : "关闭编辑")
+                .accessibilityLabel("关闭编辑")
+                .help("关闭编辑")
             }
             HStack(spacing: 12) {
                 ItemIcon(item: item, size: 44)

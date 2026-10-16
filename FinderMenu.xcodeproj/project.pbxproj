@@ -13,7 +13,7 @@
 			dependencies = (000000000000000000000225, 000000000000000000000227);
 			fileSystemSynchronizedGroups = (000000000000000000000207);
 			name = FinderMenu;
-			packageProductDependencies = (000000000000000000000210, 000000000000000000000235);
+			packageProductDependencies = (000000000000000000000210, 000000000000000000000235, 000000000000000000000238);
 			productName = FinderMenu;
 			productReference = 000000000000000000000202;
 			productType = "com.apple.product-type.application";
@@ -145,7 +145,7 @@
 		000000000000000000000212 = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
-			files = (000000000000000000000211, 000000000000000000000236);
+			files = (000000000000000000000211, 000000000000000000000236, 000000000000000000000239);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		000000000000000000000213 = {
@@ -255,7 +255,7 @@
 			knownRegions = ("zh-Hans", en, Base);
 			mainGroup = 00000000000000000000020E;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (00000000000000000000020F, 000000000000000000000234);
+			packageReferences = (00000000000000000000020F, 000000000000000000000234, 000000000000000000000237);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 000000000000000000000205;
 			projectDirPath = "";
@@ -422,6 +422,20 @@
 		000000000000000000000236 = {
 			isa = PBXBuildFile;
 			productRef = 000000000000000000000235;
+		};
+		000000000000000000000237 = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Lakr233/WindowAnimation";
+			requirement = {kind = exactVersion; version = 2.0.0; };
+		};
+		000000000000000000000238 = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000237;
+			productName = WindowAnimation;
+		};
+		000000000000000000000239 = {
+			isa = PBXBuildFile;
+			productRef = 000000000000000000000238;
 		};
 	};
 	rootObject = 000000000000000000000223;
