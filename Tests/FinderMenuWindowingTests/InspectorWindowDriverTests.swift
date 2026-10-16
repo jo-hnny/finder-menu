@@ -23,10 +23,16 @@ import Testing
     func makeDriver(width: CGFloat = 1120, managed: Bool = false) -> (RecordingWindow, InspectorWindowState) {
         NSApplication.shared.setActivationPolicy(.accessory)
         let visible = NSScreen.main!.visibleFrame
-        let size = CGSize(width: min(width, visible.width - 200), height: min(720, visible.height - 200))
-        let frame = CGRect(x: visible.minX + 100, y: visible.minY + 100, width: size.width, height: size.height)
+        // Start inside the app's minimum height; otherwise SwiftUI grows the window on small displays.
+        let styleMask: NSWindow.StyleMask = [.titled, .resizable]
+        let minimumHeight = NSWindow.frameRect(forContentRect: CGRect(x: 0, y: 0, width: 0,
+                                                                     height: InspectorWindowLayout.minimumHeight),
+                                               styleMask: styleMask).height
+        let size = CGSize(width: min(width, visible.width - 200), height: max(minimumHeight, min(720, visible.height - 200)))
+        let frame = CGRect(x: visible.minX + 100, y: visible.minY + min(100, max(0, visible.height - size.height)),
+                           width: size.width, height: size.height)
         let window = RecordingWindow(contentRect: frame,
-                              styleMask: [.titled, .resizable], backing: .buffered, defer: false)
+                              styleMask: styleMask, backing: .buffered, defer: false)
         window.setFrame(frame, display: false)
         window.reportsZoomed = managed ? true : nil
         let driver = InspectorWindowState()

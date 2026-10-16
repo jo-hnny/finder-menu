@@ -145,7 +145,8 @@ struct InspectorWindowMinimum: ViewModifier {
     let state: InspectorWindowState
 
     func body(content: Content) -> some View {
-        content.frame(minWidth: InspectorWindowLayout.minimumWidth(reveal: state.revealedWidth), minHeight: 620)
+        content.frame(minWidth: InspectorWindowLayout.minimumWidth(reveal: state.revealedWidth),
+                      minHeight: InspectorWindowLayout.minimumHeight)
     }
 }
 

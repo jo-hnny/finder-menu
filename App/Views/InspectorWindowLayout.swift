@@ -4,6 +4,7 @@ import SwiftUI
 /// Window geometry is independent of AppKit callbacks so interruption rules can be tested.
 struct InspectorWindowLayout {
     static let revealWidth: CGFloat = 296
+    static let minimumHeight: CGFloat = 620
 
     struct Columns {
         let sidebar: CGFloat
