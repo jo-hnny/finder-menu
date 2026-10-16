@@ -11,8 +11,8 @@ let package = Package(
             name: "FinderMenuWindowing",
             dependencies: [.product(name: "FinderMenuCore", package: "Core")],
             path: "App/Views",
-            exclude: ["GlassSurface.swift", "InspectorReveal.swift", "ItemInspector.swift",
-                      "MenuPreview.swift", "MenuRow.swift", "StatusBar.swift", "WorkspaceBackdrop.swift"],
+            exclude: ["GlassSurface.swift", "InspectorReveal.swift", "InspectorPreview.swift", "ItemInspector.swift",
+                      "MenuEditor.swift", "MenuPreview.swift", "MenuRow.swift", "StatusBar.swift", "WorkspaceBackdrop.swift"],
             sources: ["InspectorWindowLayout.swift", "InspectorWindowResize.swift"]
         ),
         .testTarget(name: "FinderMenuWindowingTests", dependencies: ["FinderMenuWindowing"])

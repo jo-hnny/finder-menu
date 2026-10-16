@@ -228,4 +228,21 @@ import Testing
         }
         #expect(spring.settled && frame.width == initial.width && frame.origin == moved.origin)
     }
+
+    @Test(arguments: [60.0, 120.0])
+    func sharedDisplayPrecisionKeepsThePreviewWidthConstant(rate: Double) {
+        var model = InspectorWindowLayout(), spring = InspectorSpring()
+        model.begin(reveal: 0, frame: initial, visible: visible, constrained: false, liveResize: false)
+        spring.retarget(296)
+        var frame = initial
+        let initialPreview = InspectorWindowLayout.columns(contentWidth: initial.width - 32, reveal: 0).preview
+        for _ in 0..<240 where !spring.settled {
+            spring.advance(by: 1 / rate)
+            let reveal = spring.displayedValue
+            frame = step(&model, reveal, frame)
+            let preview = InspectorWindowLayout.columns(contentWidth: frame.width - 32, reveal: reveal).preview
+            #expect(preview == initialPreview)
+        }
+        #expect(spring.settled)
+    }
 }

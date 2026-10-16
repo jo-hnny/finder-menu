@@ -130,6 +130,7 @@ struct InspectorSpring {
     private(set) var velocity: CGFloat = 0
     private(set) var target: CGFloat = 0
     var settled: Bool { value == target && velocity == 0 }
+    var displayedValue: CGFloat { value.rounded() }
 
     mutating func retarget(_ target: CGFloat) { self.target = target }
 
